@@ -1,0 +1,153 @@
+/*/
+    Name webserver-r1_lyfkjGt1d.css
+    By: TersisWilvin
+    SD: 12/19/2023 (MM/DD/YYYY)
+    MD: 12/19/2023 (MM/DD/YYYY)
+/*/
+
+*, :after, :before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+
+a, a:link, a:visited {
+    color: #00a2ff;
+    text-decoration: none;
+}
+a:focus, a:hover {
+    color: #00a2ff;
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 32px;
+}
+h2 {
+    font-size: 28px;
+}
+h3 {
+    font-size: 24px;
+}
+h4 {
+    font-size: 20px;
+}
+h5 {
+    font-size: 16px;
+}
+h6 {
+    font-size: 12px;
+}
+
+body {
+    background-color: #b9b9b9;
+    color: #1b1b1b;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+.web-content {
+    margin-top: 40px;
+    left: 50%;
+    transform: translate(-50%);
+    max-width: 1000px;
+    position: relative;
+}
+
+.navbar {
+    background: linear-gradient(0deg, #00000075 0%, transparent 100%);
+    background-color: #00ccff;
+    height: 40px;
+    text-align: center;
+}
+
+.response-shelf {
+    border: 1px solid #004455;
+}
+.response-shelf:first-child {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.response-shelf:not(:last-child) {
+    border-bottom: none;
+}
+.response-shelf:last-child {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.shelf-header {
+    color: #fff;
+    text-shadow: 2px 0 rgba(0,0,0,.25), -2px 0 rgba(0,0,0,.25), 0 2px rgba(0,0,0,.25), 0 -2px rgba(0,0,0,.25), 1px 1px rgba(0,0,0,.25), -1px -1px rgba(0,0,0,.25), 1px -1px rgba(0,0,0,.25), -1px 1px rgba(0,0,0,.25);
+    line-height: 200%;
+    display: inline-block;
+}
+.response-shelf .arrow {
+    background: transparent;
+    border: none;
+    padding: 8px;
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: bottom;
+    cursor: pointer;
+}
+.shelf-content {
+    background-color: #00566b;
+    box-shadow: inset 0 3px 3px 0px #00708C;
+    padding-top: 5px;
+    text-align: right;
+}
+.response-shelf .dropdown-arrow {
+    fill: #fff;
+}
+
+.iframe_toggle {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #fff;
+    border: 1px solid #999;
+    color: #777;
+    padding: 6px 9px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 15px;
+    cursor: pointer;
+}
+.iframe_toggle:focus, .iframe_toggle:hover {
+    background-color: #fff;
+    border-color: #999;
+    color: #191919;
+    text-decoration: none;
+}
+.iframe_toggle.active, .iframe_toggle:active {
+    background-color: #fff;
+    color: #191919;
+}
+.serverResponse {
+    display: none;
+    position: fixed;
+    right: 15px;
+    bottom: 62px;
+}
+.serverResponse:after {
+    content: "";
+    border: 5px solid transparent;
+    border-top-color: #6b6b6b;
+    position: relative;
+    display: inline-block;
+    left: 75%;
+}
+.serverResponse.open {
+    display: block;
+}
+.serverResponse_iframe {
+    border: 2px solid #6b6b6b;
+    border-radius: 3px;
+}

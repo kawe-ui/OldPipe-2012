@@ -1,0 +1,41 @@
+      <div class="yt-picker-header">
+    <button class="yt-close yt-uix-close" data-close-parent-class="yt-picker">
+      <img class="yt-close-img" src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" alt="Close">
+    </button>
+    <h3 class="yt">Choose your safety mode</h3>
+      <p class="yt-notes">Enable Safety Mode to avoid videos that may contain inappropriate content. Safety Mode uses community flagging and other signals to identify and filter out objectionable videos. Safety Mode does not guarantee to block every such video.</p>
+  </div>
+  <div class="yt-picker-content yt-grid-inline">
+          <form id="safety-form" action="/set_safety_mode" method="post">
+    <p>
+      <label>
+        <input id="safety-mode-on" name="safety_mode" type="radio" value="true" onchange="_showdiv(&#39;safety-mode-lock-section&#39;)" onpropertychange="_showdiv(&#39;safety-mode-lock-section&#39;)" >
+On
+      </label>
+
+      <label>
+        <input id="safety-mode-off" name="safety_mode" type="radio" value="false" onchange="_hidediv(&#39;safety-mode-lock-section&#39;)" onpropertychange="_hidediv(&#39;safety-mode-lock-section&#39;)"  checked >
+Off
+      </label>
+    </p>
+
+    <div id="safety-mode-lock-section" class="hid">
+        <p>
+You can lock the Safety Mode setting after you <a href="https://accounts.google.com/ServiceLogin?service=youtube&amp;continue=http%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26hl%3Den_US%26next%3D%252F%26nomobiletemp%3D1&amp;hl=en_US&amp;uilel=3&amp;passive=true">sign in</a>.
+        </p>
+    </div>
+
+    <p>
+      <input id="next_url_field" type="hidden" name="next_url">
+      <input type="hidden" name="session_token" value="TWk3HKlOc1RYmISlYVglTvG0Z_V8MTM1OTU4MDI3M0AxMzU5NDkzODcz"/>
+      <button type="submit" class=" yt-uix-button yt-uix-button-default" onclick=";return true;"  role="button"><span class="yt-uix-button-content">Save </span></button>
+    </p>
+    <script>
+      _gel('next_url_field').value = window.location.href;
+    </script>
+  </form>
+
+
+  </div>
+
+

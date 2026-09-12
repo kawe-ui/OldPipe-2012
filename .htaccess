@@ -1,0 +1,35 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Server-only code, dependencies and caches must never be downloadable.
+RewriteRule ^(?:includes|vendor|cache)(?:/|$) - [F,L,NC]
+RewriteRule ^\.git(?:/|$) - [F,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^channel/([^/]+)(/.*)?$ channel.php?id=$1 [NC,L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^embed/([^/]+)(/.*)?$ embed.php?id=$1 [NC,L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^user/([^/]+)(/.*)?$ channel.php?id=$1 [NC,L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+</IfModule>
+
+<FilesMatch "\.(?:inc|env|ini|log|sql|bak|dist)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Header always set Content-Security-Policy "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'"
+</IfModule>
+
+ErrorDocument 404 /404.php

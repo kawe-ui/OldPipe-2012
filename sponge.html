@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" style="height: 100%;">
+<head>
+  <meta charset="utf-8" />
+  <title>CheerpX in HTML</title>
+  <script type="module">
+    import * as CheerpX from "https://cxrtnc.leaningtech.com/1.2.8/cx.esm.js";
+
+    async function startCheerpX() {
+      // 1. Setup the remote disk image and local overlay for file persistence
+      const cloudDevice = await CheerpX.HttpBytesDevice.create(
+        "https://weblinux.leaningtech.com/debian_mini_20230519_5022088024.ext2"
+      );
+      const idbDevice = await CheerpX.IDBDevice.create("block1");
+      const overlayDevice = await CheerpX.OverlayDevice.create(cloudDevice, idbDevice);
+
+      // 2. Initialize the virtual Linux environment instance
+      const cx = await CheerpX.Linux.create({
+        mounts: [
+          { type: "ext2", path: "/", dev: overlayDevice },
+          { type: "devs", path: "/dev" }
+        ]
+      });
+
+      // 3. Bind the visual terminal output to the HTML <pre> element
+      cx.setConsole(document.getElementById("console"));
+
+      // 4. Run the bash shell inside the browser
+      await cx.run("/bin/bash", ["--login"], {
+        env: [
+          "HOME=/home/user",
+          "USER=user",
+          "SHELL=/bin/bash",
+          "EDITOR=vim",
+          "LANG=en_US.UTF-8",
+          "LC_ALL=C"
+        ],
+        cwd: "/home/user",
+        uid: 1000,
+        gid: 1000,
+      });
+    }
+
+    startCheerpX().catch(console.error);
+  </script>
+</head>
+<body style="height: 100%; background: black; margin: 0;">
+  <!-- Terminal Console View -->
+  <pre id="console" style="height: 100%; color: white; font-family: monospace; padding: 10px; margin: 0;"></pre>
+</body>
+</html>

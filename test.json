@@ -1,0 +1,59 @@
+{
+    "assets": {
+        "css_actions": "/yts/cssbin/www-player-actions-vflB-Vjb3.css",
+        "html": "/html5_player_template",
+        "css": "/yts/cssbin/www-player-vflF70GRK.css",
+        "js": "/yts/jsbin/html5player-vflfWlguy.js"
+    },
+    "url": "/yts/swfbin/2012lplayer_localhost_patched.swf",
+    "min_version": "8.0.0",
+    "args": {
+        "video_id": "X4VbdwhkE10",
+        "vid": "X4VbdwhkE10",
+        "title": "lofi hip hop radio 📚 beats to relax/study to",
+        "length_seconds": 0,
+        "keywords": "lo-fi,lo fi,lofi,lofi hiphop,lo-fi hiphop,lo fi hiphop,hiphop,hip hop,lofi hip hop,lo-fi hip hop,lo fi hip hop,lofi radio,lo-fi radio,lo fi radio,lofi hip hop radio,lo-fi hip hop radio,lo fi hip hop radio,chilledcow,chilled cow,chilledcow radio,chilled cow radio,chilledcow station,lofi radio chilledcow,chillhop,study music,lofi hip hop radio - beats to relax\\/study to,beats to relax,music to study,radio,relaxing music,playlist,music",
+        "fmt_list": "",
+        "url_encoded_fmt_stream_map": "",
+        "rvs": "view_count=&author=Lofi+Girl&title=jazz+lofi+radio+%F0%9F%8E%B7+beats+to+chill%2Fstudy+to&length_seconds=0&id=E2vONfzoyRI,view_count=&author=Lofi+Tone+Art&title=Soft+Lofi+Room+%F0%9F%8E%A7+Chill+Vibes+for+Peaceful+Study+%26+Relaxation&length_seconds=0&id=yf5NOyy1SXU,view_count=475%2C000&author=Chill+Mori+BGM&title=Rainy+Day+Starbucks+Jazz+%E2%98%95%EF%B8%8F+Relaxing+Jazz+Music+%26+Rain+Sounds+%5BACNH%5D&length_seconds=10801&id=U74Pmp4BJok,view_count=183%2C000&author=ICYFOG&title=%F0%9D%92%91%F0%9D%92%8D%F0%9D%92%82%F0%9D%92%9A%F0%9D%92%8D%F0%9D%92%8A%F0%9D%92%94%F0%9D%92%95+%7C+Vinyl+Jazz+Hiphop+%7C+TOKYO+%7C+Nujabes+%2F+MF+Doom+%2F+Madlib+%2F+J+Dilla++%7C+Supreme+on+Shibuya&length_seconds=11583&id=JA8rNFTpIdo,view_count=&author=Lofi+Girl&title=Study+With+Me+%F0%9F%93%9A+Pomodoro&length_seconds=0&id=qGohtGC5Rtk,view_count=4%2C700%2C000&author=Malte+Marten&title=Nervous+System+Regulation+%28999+Hz%29+%7C+1+hour+handpan+music+%7C+Malte+Marten&length_seconds=3721&id=HRCfnvxpYP8,view_count=&author=Golden+Roast+Jazz+Club&title=Happy+Jazz+Music+%E2%98%95+Bossa+Nova+background+for+Relaxing%2C+Great+Moods+and+Happy+Moods&length_seconds=0&id=W1YOqTxE09s,view_count=&author=Lofi+With+My+Cat&title=Dreamy+summer+garden+%F0%9F%8D%83%F0%9F%98%BD+Lofi+Beats+for+Study%2C+Relax+%26+Deep+Focus&length_seconds=0&id=oKrV-zMDfZY,view_count=276%2C000&author=Little+Lofi+Cute&title=Lofi+Summer+Vibes+%F0%9F%8C%8A+Seaside+Coffee+%26+Relaxing+Lofi+for+a+Sense+of+Peace+%E2%98%95+Hip+Hop+Beats&length_seconds=12351&id=ovS27OGTajs,view_count=4%2C400%2C000&author=%2Fno&title=%2F%F0%9D%90%A7%F0%9D%90%A8+%F0%9D%90%AC%F0%9D%90%AD%F0%9D%90%9A%F0%9D%90%AB%F0%9D%90%AC+%7C+80%27s+Tokyo+Funky+Lofi+Playlist+%F0%9F%8E%A7+%7C+Broadcasting+Beyond+%7C+Relax+%26+Chill+%26+Study+to&length_seconds=6625&id=7XPGU7dmZXg,view_count=1%2C000%2C000&author=Lofi+Girl&title=winter+lofi+mix+%5B3+hours%5D+%E2%9D%84%EF%B8%8F+relaxing+music+to+chill%2Fstudy+to&length_seconds=11065&id=S-4hwfyK-XQ,view_count=82%2C000&author=Cowboy+Bebop&title=1980%27s+Lofi+rain+in+Tokyo+playlist++%E2%80%A2++Samurai+Champloo+x+Cowboy+Bebop+%5Blofi+mix+for+enjoy%2Funwind%5D&length_seconds=10882&id=m4ZEzP9unUA",
+        "ttsurl": "/timedtext",
+        "allow_embed": 1,
+        "allow_ratings": 1,
+        "live_playback": 1,
+        "vq": "auto",
+        "autohide": "2",
+        "autoplay": "0",
+        "cr": "US",
+        "hl": "en_US",
+        "csi_page_type": "watch5",
+        "enablejsapi": 1,
+        "enablecsi": "0",
+        "sendtmp": "0",
+        "no_get_video_log": "1",
+        "iv_load_policy": 1,
+        "metadata_url": "/get_video_metadata?video_id=X4VbdwhkE10",
+        "iv_invideo_url": "http://localhost:5000/annotations_iv/read2.php?video_id=X4VbdwhkE10",
+        "iv_read_url": "http://localhost:5000/annotations_iv/read2.php?video_id=X4VbdwhkE10",
+        "iv_module": "/yts/swfbin/modules/2012_iv3_module-vfl7CyC10.swf",
+        "cc3_module": "/yts/swfbin/modules/2012_subtitles3_module-vflX-PxNh.swf",
+        "showpopout": 1,
+        "pltype": "contentugc",
+        "plid": "AATQJdc1-gxnOCVY",
+        "timestamp": 1784532587,
+        "referrer": "http://localhost:5000/watch?v=X4VbdwhkE10",
+        "sdetail": "p:/watch/X4VbdwhkE10",
+        "sourceid": "y",
+        "watermark": "",
+        "t": "vjVQa1PpcFPTXpgY6mYDGHvfyt_a_bp1XtYr2eqEPNU="
+    },
+    "params": {
+        "allowscriptaccess": "always",
+        "allowfullscreen": "true",
+        "bgcolor": "#000000"
+    },
+    "attrs": {
+        "id": "movie_player"
+    },
+    "html5": false,
+    "disable": []
+}

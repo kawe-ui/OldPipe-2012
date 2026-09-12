@@ -1,0 +1,1026 @@
+[
+    {
+        "colorCode": "#000000",
+        "percentage": 0
+    },
+    {
+        "colorCode": "#010101",
+        "percentage": 0.39
+    },
+    {
+        "colorCode": "#020202",
+        "percentage": 0.78
+    },
+    {
+        "colorCode": "#030303",
+        "percentage": 1.18
+    },
+    {
+        "colorCode": "#040404",
+        "percentage": 1.57
+    },
+    {
+        "colorCode": "#050505",
+        "percentage": 1.96
+    },
+    {
+        "colorCode": "#060606",
+        "percentage": 2.35
+    },
+    {
+        "colorCode": "#070707",
+        "percentage": 2.75
+    },
+    {
+        "colorCode": "#080808",
+        "percentage": 3.14
+    },
+    {
+        "colorCode": "#090909",
+        "percentage": 3.53
+    },
+    {
+        "colorCode": "#0a0a0a",
+        "percentage": 3.92
+    },
+    {
+        "colorCode": "#0b0b0b",
+        "percentage": 4.31
+    },
+    {
+        "colorCode": "#0c0c0c",
+        "percentage": 4.71
+    },
+    {
+        "colorCode": "#0d0d0d",
+        "percentage": 5.1
+    },
+    {
+        "colorCode": "#0e0e0e",
+        "percentage": 5.49
+    },
+    {
+        "colorCode": "#0f0f0f",
+        "percentage": 5.88
+    },
+    {
+        "colorCode": "#101010",
+        "percentage": 6.27
+    },
+    {
+        "colorCode": "#111111",
+        "percentage": 6.67
+    },
+    {
+        "colorCode": "#121212",
+        "percentage": 7.06
+    },
+    {
+        "colorCode": "#131313",
+        "percentage": 7.45
+    },
+    {
+        "colorCode": "#141414",
+        "percentage": 7.84
+    },
+    {
+        "colorCode": "#151515",
+        "percentage": 8.24
+    },
+    {
+        "colorCode": "#161616",
+        "percentage": 8.63
+    },
+    {
+        "colorCode": "#171717",
+        "percentage": 9.02
+    },
+    {
+        "colorCode": "#181818",
+        "percentage": 9.41
+    },
+    {
+        "colorCode": "#191919",
+        "percentage": 9.8
+    },
+    {
+        "colorCode": "#1a1a1a",
+        "percentage": 10.2
+    },
+    {
+        "colorCode": "#1b1b1b",
+        "percentage": 10.59
+    },
+    {
+        "colorCode": "#1c1c1c",
+        "percentage": 10.98
+    },
+    {
+        "colorCode": "#1d1d1d",
+        "percentage": 11.37
+    },
+    {
+        "colorCode": "#1e1e1e",
+        "percentage": 11.76
+    },
+    {
+        "colorCode": "#1f1f1f",
+        "percentage": 12.16
+    },
+    {
+        "colorCode": "#202020",
+        "percentage": 12.55
+    },
+    {
+        "colorCode": "#212121",
+        "percentage": 12.94
+    },
+    {
+        "colorCode": "#222222",
+        "percentage": 13.33
+    },
+    {
+        "colorCode": "#232323",
+        "percentage": 13.73
+    },
+    {
+        "colorCode": "#242424",
+        "percentage": 14.12
+    },
+    {
+        "colorCode": "#252525",
+        "percentage": 14.51
+    },
+    {
+        "colorCode": "#262626",
+        "percentage": 14.9
+    },
+    {
+        "colorCode": "#272727",
+        "percentage": 15.29
+    },
+    {
+        "colorCode": "#282828",
+        "percentage": 15.69
+    },
+    {
+        "colorCode": "#292929",
+        "percentage": 16.08
+    },
+    {
+        "colorCode": "#2a2a2a",
+        "percentage": 16.47
+    },
+    {
+        "colorCode": "#2b2b2b",
+        "percentage": 16.86
+    },
+    {
+        "colorCode": "#2c2c2c",
+        "percentage": 17.25
+    },
+    {
+        "colorCode": "#2d2d2d",
+        "percentage": 17.65
+    },
+    {
+        "colorCode": "#2e2e2e",
+        "percentage": 18.04
+    },
+    {
+        "colorCode": "#2f2f2f",
+        "percentage": 18.43
+    },
+    {
+        "colorCode": "#303030",
+        "percentage": 18.82
+    },
+    {
+        "colorCode": "#313131",
+        "percentage": 19.22
+    },
+    {
+        "colorCode": "#323232",
+        "percentage": 19.61
+    },
+    {
+        "colorCode": "#333333",
+        "percentage": 20
+    },
+    {
+        "colorCode": "#343434",
+        "percentage": 20.39
+    },
+    {
+        "colorCode": "#353535",
+        "percentage": 20.78
+    },
+    {
+        "colorCode": "#363636",
+        "percentage": 21.18
+    },
+    {
+        "colorCode": "#373737",
+        "percentage": 21.57
+    },
+    {
+        "colorCode": "#383838",
+        "percentage": 21.96
+    },
+    {
+        "colorCode": "#393939",
+        "percentage": 22.35
+    },
+    {
+        "colorCode": "#3a3a3a",
+        "percentage": 22.75
+    },
+    {
+        "colorCode": "#3b3b3b",
+        "percentage": 23.14
+    },
+    {
+        "colorCode": "#3c3c3c",
+        "percentage": 23.53
+    },
+    {
+        "colorCode": "#3d3d3d",
+        "percentage": 23.92
+    },
+    {
+        "colorCode": "#3e3e3e",
+        "percentage": 24.31
+    },
+    {
+        "colorCode": "#3f3f3f",
+        "percentage": 24.71
+    },
+    {
+        "colorCode": "#404040",
+        "percentage": 25.1
+    },
+    {
+        "colorCode": "#414141",
+        "percentage": 25.49
+    },
+    {
+        "colorCode": "#424242",
+        "percentage": 25.88
+    },
+    {
+        "colorCode": "#434343",
+        "percentage": 26.27
+    },
+    {
+        "colorCode": "#444444",
+        "percentage": 26.67
+    },
+    {
+        "colorCode": "#454545",
+        "percentage": 27.06
+    },
+    {
+        "colorCode": "#464646",
+        "percentage": 27.45
+    },
+    {
+        "colorCode": "#474747",
+        "percentage": 27.84
+    },
+    {
+        "colorCode": "#484848",
+        "percentage": 28.24
+    },
+    {
+        "colorCode": "#494949",
+        "percentage": 28.63
+    },
+    {
+        "colorCode": "#4a4a4a",
+        "percentage": 29.02
+    },
+    {
+        "colorCode": "#4b4b4b",
+        "percentage": 29.41
+    },
+    {
+        "colorCode": "#4c4c4c",
+        "percentage": 29.8
+    },
+    {
+        "colorCode": "#4d4d4d",
+        "percentage": 30.2
+    },
+    {
+        "colorCode": "#4e4e4e",
+        "percentage": 30.59
+    },
+    {
+        "colorCode": "#4f4f4f",
+        "percentage": 30.98
+    },
+    {
+        "colorCode": "#505050",
+        "percentage": 31.37
+    },
+    {
+        "colorCode": "#515151",
+        "percentage": 31.76
+    },
+    {
+        "colorCode": "#525252",
+        "percentage": 32.16
+    },
+    {
+        "colorCode": "#535353",
+        "percentage": 32.55
+    },
+    {
+        "colorCode": "#545454",
+        "percentage": 32.94
+    },
+    {
+        "colorCode": "#555555",
+        "percentage": 33.33
+    },
+    {
+        "colorCode": "#565656",
+        "percentage": 33.73
+    },
+    {
+        "colorCode": "#575757",
+        "percentage": 34.12
+    },
+    {
+        "colorCode": "#585858",
+        "percentage": 34.51
+    },
+    {
+        "colorCode": "#595959",
+        "percentage": 34.9
+    },
+    {
+        "colorCode": "#5a5a5a",
+        "percentage": 35.29
+    },
+    {
+        "colorCode": "#5b5b5b",
+        "percentage": 35.69
+    },
+    {
+        "colorCode": "#5c5c5c",
+        "percentage": 36.08
+    },
+    {
+        "colorCode": "#5d5d5d",
+        "percentage": 36.47
+    },
+    {
+        "colorCode": "#5e5e5e",
+        "percentage": 36.86
+    },
+    {
+        "colorCode": "#5f5f5f",
+        "percentage": 37.25
+    },
+    {
+        "colorCode": "#606060",
+        "percentage": 37.65
+    },
+    {
+        "colorCode": "#616161",
+        "percentage": 38.04
+    },
+    {
+        "colorCode": "#626262",
+        "percentage": 38.43
+    },
+    {
+        "colorCode": "#636363",
+        "percentage": 38.82
+    },
+    {
+        "colorCode": "#646464",
+        "percentage": 39.22
+    },
+    {
+        "colorCode": "#656565",
+        "percentage": 39.61
+    },
+    {
+        "colorCode": "#666666",
+        "percentage": 40
+    },
+    {
+        "colorCode": "#676767",
+        "percentage": 40.39
+    },
+    {
+        "colorCode": "#686868",
+        "percentage": 40.78
+    },
+    {
+        "colorCode": "#696969",
+        "percentage": 41.18
+    },
+    {
+        "colorCode": "#6a6a6a",
+        "percentage": 41.57
+    },
+    {
+        "colorCode": "#6b6b6b",
+        "percentage": 41.96
+    },
+    {
+        "colorCode": "#6c6c6c",
+        "percentage": 42.35
+    },
+    {
+        "colorCode": "#6d6d6d",
+        "percentage": 42.75
+    },
+    {
+        "colorCode": "#6e6e6e",
+        "percentage": 43.14
+    },
+    {
+        "colorCode": "#6f6f6f",
+        "percentage": 43.53
+    },
+    {
+        "colorCode": "#707070",
+        "percentage": 43.92
+    },
+    {
+        "colorCode": "#717171",
+        "percentage": 44.31
+    },
+    {
+        "colorCode": "#727272",
+        "percentage": 44.71
+    },
+    {
+        "colorCode": "#737373",
+        "percentage": 45.1
+    },
+    {
+        "colorCode": "#747474",
+        "percentage": 45.49
+    },
+    {
+        "colorCode": "#757575",
+        "percentage": 45.88
+    },
+    {
+        "colorCode": "#767676",
+        "percentage": 46.27
+    },
+    {
+        "colorCode": "#777777",
+        "percentage": 46.67
+    },
+    {
+        "colorCode": "#787878",
+        "percentage": 47.06
+    },
+    {
+        "colorCode": "#797979",
+        "percentage": 47.45
+    },
+    {
+        "colorCode": "#7a7a7a",
+        "percentage": 47.84
+    },
+    {
+        "colorCode": "#7b7b7b",
+        "percentage": 48.24
+    },
+    {
+        "colorCode": "#7c7c7c",
+        "percentage": 48.63
+    },
+    {
+        "colorCode": "#7d7d7d",
+        "percentage": 49.02
+    },
+    {
+        "colorCode": "#7e7e7e",
+        "percentage": 49.41
+    },
+    {
+        "colorCode": "#7f7f7f",
+        "percentage": 49.8
+    },
+    {
+        "colorCode": "#808080",
+        "percentage": 50.2
+    },
+    {
+        "colorCode": "#818181",
+        "percentage": 50.59
+    },
+    {
+        "colorCode": "#828282",
+        "percentage": 50.98
+    },
+    {
+        "colorCode": "#838383",
+        "percentage": 51.37
+    },
+    {
+        "colorCode": "#848484",
+        "percentage": 51.76
+    },
+    {
+        "colorCode": "#858585",
+        "percentage": 52.16
+    },
+    {
+        "colorCode": "#868686",
+        "percentage": 52.55
+    },
+    {
+        "colorCode": "#878787",
+        "percentage": 52.94
+    },
+    {
+        "colorCode": "#888888",
+        "percentage": 53.33
+    },
+    {
+        "colorCode": "#898989",
+        "percentage": 53.73
+    },
+    {
+        "colorCode": "#8a8a8a",
+        "percentage": 54.12
+    },
+    {
+        "colorCode": "#8b8b8b",
+        "percentage": 54.51
+    },
+    {
+        "colorCode": "#8c8c8c",
+        "percentage": 54.9
+    },
+    {
+        "colorCode": "#8d8d8d",
+        "percentage": 55.29
+    },
+    {
+        "colorCode": "#8e8e8e",
+        "percentage": 55.69
+    },
+    {
+        "colorCode": "#8f8f8f",
+        "percentage": 56.08
+    },
+    {
+        "colorCode": "#909090",
+        "percentage": 56.47
+    },
+    {
+        "colorCode": "#919191",
+        "percentage": 56.86
+    },
+    {
+        "colorCode": "#929292",
+        "percentage": 57.25
+    },
+    {
+        "colorCode": "#939393",
+        "percentage": 57.65
+    },
+    {
+        "colorCode": "#949494",
+        "percentage": 58.04
+    },
+    {
+        "colorCode": "#959595",
+        "percentage": 58.43
+    },
+    {
+        "colorCode": "#969696",
+        "percentage": 58.82
+    },
+    {
+        "colorCode": "#979797",
+        "percentage": 59.22
+    },
+    {
+        "colorCode": "#989898",
+        "percentage": 59.61
+    },
+    {
+        "colorCode": "#999999",
+        "percentage": 60
+    },
+    {
+        "colorCode": "#9a9a9a",
+        "percentage": 60.39
+    },
+    {
+        "colorCode": "#9b9b9b",
+        "percentage": 60.78
+    },
+    {
+        "colorCode": "#9c9c9c",
+        "percentage": 61.18
+    },
+    {
+        "colorCode": "#9d9d9d",
+        "percentage": 61.57
+    },
+    {
+        "colorCode": "#9e9e9e",
+        "percentage": 61.96
+    },
+    {
+        "colorCode": "#9f9f9f",
+        "percentage": 62.35
+    },
+    {
+        "colorCode": "#a0a0a0",
+        "percentage": 62.75
+    },
+    {
+        "colorCode": "#a1a1a1",
+        "percentage": 63.14
+    },
+    {
+        "colorCode": "#a2a2a2",
+        "percentage": 63.53
+    },
+    {
+        "colorCode": "#a3a3a3",
+        "percentage": 63.92
+    },
+    {
+        "colorCode": "#a4a4a4",
+        "percentage": 64.31
+    },
+    {
+        "colorCode": "#a5a5a5",
+        "percentage": 64.71
+    },
+    {
+        "colorCode": "#a6a6a6",
+        "percentage": 65.1
+    },
+    {
+        "colorCode": "#a7a7a7",
+        "percentage": 65.49
+    },
+    {
+        "colorCode": "#a8a8a8",
+        "percentage": 65.88
+    },
+    {
+        "colorCode": "#a9a9a9",
+        "percentage": 66.27
+    },
+    {
+        "colorCode": "#aaaaaa",
+        "percentage": 66.67
+    },
+    {
+        "colorCode": "#ababab",
+        "percentage": 67.06
+    },
+    {
+        "colorCode": "#acacac",
+        "percentage": 67.45
+    },
+    {
+        "colorCode": "#adadad",
+        "percentage": 67.84
+    },
+    {
+        "colorCode": "#aeaeae",
+        "percentage": 68.24
+    },
+    {
+        "colorCode": "#afafaf",
+        "percentage": 68.63
+    },
+    {
+        "colorCode": "#b0b0b0",
+        "percentage": 69.02
+    },
+    {
+        "colorCode": "#b1b1b1",
+        "percentage": 69.41
+    },
+    {
+        "colorCode": "#b2b2b2",
+        "percentage": 69.8
+    },
+    {
+        "colorCode": "#b3b3b3",
+        "percentage": 70.2
+    },
+    {
+        "colorCode": "#b4b4b4",
+        "percentage": 70.59
+    },
+    {
+        "colorCode": "#b5b5b5",
+        "percentage": 70.98
+    },
+    {
+        "colorCode": "#b6b6b6",
+        "percentage": 71.37
+    },
+    {
+        "colorCode": "#b7b7b7",
+        "percentage": 71.76
+    },
+    {
+        "colorCode": "#b8b8b8",
+        "percentage": 72.16
+    },
+    {
+        "colorCode": "#b9b9b9",
+        "percentage": 72.55
+    },
+    {
+        "colorCode": "#bababa",
+        "percentage": 72.94
+    },
+    {
+        "colorCode": "#bbbbbb",
+        "percentage": 73.33
+    },
+    {
+        "colorCode": "#bcbcbc",
+        "percentage": 73.73
+    },
+    {
+        "colorCode": "#bdbdbd",
+        "percentage": 74.12
+    },
+    {
+        "colorCode": "#bebebe",
+        "percentage": 74.51
+    },
+    {
+        "colorCode": "#bfbfbf",
+        "percentage": 74.9
+    },
+    {
+        "colorCode": "#c0c0c0",
+        "percentage": 75.29
+    },
+    {
+        "colorCode": "#c1c1c1",
+        "percentage": 75.69
+    },
+    {
+        "colorCode": "#c2c2c2",
+        "percentage": 76.08
+    },
+    {
+        "colorCode": "#c3c3c3",
+        "percentage": 76.47
+    },
+    {
+        "colorCode": "#c4c4c4",
+        "percentage": 76.86
+    },
+    {
+        "colorCode": "#c5c5c5",
+        "percentage": 77.25
+    },
+    {
+        "colorCode": "#c6c6c6",
+        "percentage": 77.65
+    },
+    {
+        "colorCode": "#c7c7c7",
+        "percentage": 78.04
+    },
+    {
+        "colorCode": "#c8c8c8",
+        "percentage": 78.43
+    },
+    {
+        "colorCode": "#c9c9c9",
+        "percentage": 78.82
+    },
+    {
+        "colorCode": "#cacaca",
+        "percentage": 79.22
+    },
+    {
+        "colorCode": "#cbcbcb",
+        "percentage": 79.61
+    },
+    {
+        "colorCode": "#cccccc",
+        "percentage": 80
+    },
+    {
+        "colorCode": "#cdcdcd",
+        "percentage": 80.39
+    },
+    {
+        "colorCode": "#cecece",
+        "percentage": 80.78
+    },
+    {
+        "colorCode": "#cfcfcf",
+        "percentage": 81.18
+    },
+    {
+        "colorCode": "#d0d0d0",
+        "percentage": 81.57
+    },
+    {
+        "colorCode": "#d1d1d1",
+        "percentage": 81.96
+    },
+    {
+        "colorCode": "#d2d2d2",
+        "percentage": 82.35
+    },
+    {
+        "colorCode": "#d3d3d3",
+        "percentage": 82.75
+    },
+    {
+        "colorCode": "#d4d4d4",
+        "percentage": 83.14
+    },
+    {
+        "colorCode": "#d5d5d5",
+        "percentage": 83.53
+    },
+    {
+        "colorCode": "#d6d6d6",
+        "percentage": 83.92
+    },
+    {
+        "colorCode": "#d7d7d7",
+        "percentage": 84.31
+    },
+    {
+        "colorCode": "#d8d8d8",
+        "percentage": 84.71
+    },
+    {
+        "colorCode": "#d9d9d9",
+        "percentage": 85.1
+    },
+    {
+        "colorCode": "#dadada",
+        "percentage": 85.49
+    },
+    {
+        "colorCode": "#dbdbdb",
+        "percentage": 85.88
+    },
+    {
+        "colorCode": "#dcdcdc",
+        "percentage": 86.27
+    },
+    {
+        "colorCode": "#dddddd",
+        "percentage": 86.67
+    },
+    {
+        "colorCode": "#dedede",
+        "percentage": 87.06
+    },
+    {
+        "colorCode": "#dfdfdf",
+        "percentage": 87.45
+    },
+    {
+        "colorCode": "#e0e0e0",
+        "percentage": 87.84
+    },
+    {
+        "colorCode": "#e1e1e1",
+        "percentage": 88.24
+    },
+    {
+        "colorCode": "#e2e2e2",
+        "percentage": 88.63
+    },
+    {
+        "colorCode": "#e3e3e3",
+        "percentage": 89.02
+    },
+    {
+        "colorCode": "#e4e4e4",
+        "percentage": 89.41
+    },
+    {
+        "colorCode": "#e5e5e5",
+        "percentage": 89.8
+    },
+    {
+        "colorCode": "#e6e6e6",
+        "percentage": 90.2
+    },
+    {
+        "colorCode": "#e7e7e7",
+        "percentage": 90.59
+    },
+    {
+        "colorCode": "#e8e8e8",
+        "percentage": 90.98
+    },
+    {
+        "colorCode": "#e9e9e9",
+        "percentage": 91.37
+    },
+    {
+        "colorCode": "#eaeaea",
+        "percentage": 91.76
+    },
+    {
+        "colorCode": "#ebebeb",
+        "percentage": 92.16
+    },
+    {
+        "colorCode": "#ececec",
+        "percentage": 92.55
+    },
+    {
+        "colorCode": "#ededed",
+        "percentage": 92.94
+    },
+    {
+        "colorCode": "#eeeeee",
+        "percentage": 93.33
+    },
+    {
+        "colorCode": "#efefef",
+        "percentage": 93.73
+    },
+    {
+        "colorCode": "#f0f0f0",
+        "percentage": 94.12
+    },
+    {
+        "colorCode": "#f1f1f1",
+        "percentage": 94.51
+    },
+    {
+        "colorCode": "#f2f2f2",
+        "percentage": 94.9
+    },
+    {
+        "colorCode": "#f3f3f3",
+        "percentage": 95.29
+    },
+    {
+        "colorCode": "#f4f4f4",
+        "percentage": 95.69
+    },
+    {
+        "colorCode": "#f5f5f5",
+        "percentage": 96.08
+    },
+    {
+        "colorCode": "#f6f6f6",
+        "percentage": 96.47
+    },
+    {
+        "colorCode": "#f7f7f7",
+        "percentage": 96.86
+    },
+    {
+        "colorCode": "#f8f8f8",
+        "percentage": 97.25
+    },
+    {
+        "colorCode": "#f9f9f9",
+        "percentage": 97.65
+    },
+    {
+        "colorCode": "#fafafa",
+        "percentage": 98.04
+    },
+    {
+        "colorCode": "#fbfbfb",
+        "percentage": 98.43
+    },
+    {
+        "colorCode": "#fcfcfc",
+        "percentage": 98.82
+    },
+    {
+        "colorCode": "#fdfdfd",
+        "percentage": 99.22
+    },
+    {
+        "colorCode": "#fefefe",
+        "percentage": 99.61
+    },
+    {
+        "colorCode": "#ffffff",
+        "percentage": 100
+    }
+]

@@ -1,0 +1,7 @@
+# Never commit secrets or generated runtime data.
+.env
+.env.*
+!/\.env.example
+/cache/*
+!/cache/.gitkeep
+/includes/secrets.php

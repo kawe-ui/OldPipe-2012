@@ -1,0 +1,13 @@
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/yukiscoffee/coffeerequest"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "guzzlehttp/guzzle": "^7.10"
+  }
+}

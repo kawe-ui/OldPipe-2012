@@ -1,0 +1,2 @@
+
+<!DOCTYPE html><html><title>IFrame containing JS code for making HTTPs requests</title><head><meta http-equiv='X-UA-Compatible' content='IE=9'><script type='text/javascript' src='/youtube/leanback/6c60df05/javascript/remote-pairing.js'></script></head><body onload = 'yt.www.remotepairing.init()'></body></html>

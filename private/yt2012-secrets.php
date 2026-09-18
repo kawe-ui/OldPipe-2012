@@ -1,29 +1,21 @@
 <?php
-// ═══════════════════════════════════════════════════════════════════════════════
-//  yt2012-secrets.php — секреты YT2012-реставрации.
-//
-//  ЛЕЖИТ ВНЕ web root (C:\xampp\private, НЕ внутри htdocs) и НЕ в git.
-//  Подключается на лету из includes/config.inc.php → yt_secret_config().
-//
-//  ВАЖНО: ключи массива обязаны начинаться с префикса YT_ — код читает их
-//  через yt_env('YT_GOOGLE_CLIENT_ID') и т.д. Имена без префикса
-//  (GOOGLE_CLIENT_ID) НЕ подхватятся.
-//
-//  Замени значения YOUR_... на реальные из Google Cloud Console. Пока они
-//  начинаются с «YOUR_», приложение считает OAuth ненастроенным и показывает
-//  страницу-заглушку (это защита от попытки войти с фейковыми данными).
-// ═══════════════════════════════════════════════════════════════════════════════
-
 return [
-    'YT_APP_URL'              => 'http://localhost:5000/',
+    'YT_APP_URL'              => 'http://localhost/',
     'YT_APP_ENV'              => 'development',
 
-    // OAuth-клиент (тип «Web application») из Google Cloud → APIs & Services →
-    // Credentials. Redirect URI у клиента: http://localhost/auth/google/callback
-    'YT_GOOGLE_CLIENT_ID'     => '556983179587-1dsrsbvto710od5libs4a2nkaivj3930.apps.googleusercontent.com',
-    'YT_GOOGLE_CLIENT_SECRET' => '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',
+    // OAuth client (type: ‘Web application’) from Google Cloud → APIs & Services →
+    // Credentials. The client’s redirect URI: http://localhost/auth/google/callback
+    'YT_GOOGLE_CLIENT_ID'     => 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+    'YT_GOOGLE_CLIENT_SECRET' => 'YOUR_CLIENT_SECRET',
 
-    // Необязательно: API-ключ для запасного резолва канала по @handle
-    // (Data API). Без него вход работает, просто без этого фолбэка.
+    // Optional: API key for the fallback channel resolver via @handle
+    // (Data API). The input works without it, but without this fallback.
     'YT_GOOGLE_API_KEY'       => '',
+
+    // Proxy for external requests (InnerTube, RYD, googlevideo). Empty = none.
+    'YT_PROXY_HOST'           => '',
+    'YT_PROXY_PORT'           => '',
+    'YT_PROXY_TYPE'           => 'http',   // http | socks5
+    'YT_PROXY_USER'           => '',
+    'YT_PROXY_PASS'           => '',
 ];

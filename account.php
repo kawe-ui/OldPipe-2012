@@ -7,7 +7,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/includes/auth.inc.php');
 $ytAccount = yt_account_info();
 if ($ytAccount === null) {
     // РЎС‚СЂР°РЅРёС†Р° РЅР°СЃС‚СЂРѕРµРє Р±РµР· РІС…РѕРґР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ вЂ” РєР°Рє РІ 2012 СѓРІРѕРґРёРј РЅР° Р»РѕРіРёРЅ.
-    header('Location: /auth/google/login?return=' . urlencode('/account'));
+    header('Location: ' . yt_signin_url('/account'));
     exit;
 }
 
@@ -515,15 +515,6 @@ $accAvatar    = default_avatar($ytAccount['avatar'] ?? '');
          <br>
          <a href="#">Learn how to promote your videos</a>
       </div>
-      <div style="margin-top:40px;">
-         <h2><b>Video Player</b></h2>
-         <br>
-         <select name="player">
-            <option value="1" selected="">2012 Legacy (HTML5/flash)</option>
-            <option value="2">Plyr (HTML5)</option>
-            <option value="3">VideoJS (HTML5)</option>
-         </select>
-      </div>
    </div>
 </form>                            						</div>
 					</div>
@@ -532,7 +523,78 @@ $accAvatar    = default_avatar($ytAccount['avatar'] ?? '');
 			</div>
 			<!-- end pagemiddle -->
 			<!-- begin pagebottom -->
-			<?php require_once ($_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'); ?>
+			<div id="footer-container"><!-- begin footer -->
+<div id="footer">
+    <div class="yt-horizontal-rule "><span class="first"></span><span class="second"></span><span class="third"></span></div>
+    <div id="footer-logo">
+        <a href="/" title="EraCast home">
+            <img src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt="EraCast home">
+							<span class="content-region"></span>
+			        </a>
+        <span id="footer-divider"></span>
+    </div>
+        <div id="footer-main">
+        <div id="in-product-help" class="yt-uix-clickcard">
+            <button type="button" id="help-button" onclick=";return false;" class="yt-uix-clickcard-target yt-uix-button-reverse yt-uix-button yt-uix-button-default" data-orientation="vertical" data-locale="en_US" data-iph-anchor-text="More Help" data-iph-search-button-text="Search" data-iph-tracking="iph-questionmark" data-iph-js-url="//cdn.eracast.cc/yts/jsbin/www-help-vflHCwoE6.js" data-iph-search-input-text="Search YouTube's Help Center" data-iph-title-text="Need Help on this page?" data-iph-topic-id="1699712" data-iph-css-url="//s.ytimg.com/yts/cssbin/www-helpie-vflyr74Zr.css" data-help-center-host="//support.google.com/youtube" role="button">
+                <span class="yt-uix-button-content">
+                    <img class="questionmark" src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif">
+                    <span>Help</span>
+                    <img class="yt-uix-button-arrow" src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif">
+                </span>
+            </button>
+        </div>
+        <ul id="footer-links-primary">
+            <li><a href="https://www.eracast.cc/t/about_eracast">About</a></li>
+            <li><a href="javascript:void(0);">Press &amp; Blogs</a></li>
+            <li><a href="https://www.eracast.cc/t/copyright_center">Copyright</a></li>
+            <li><a href="https://www.eracast.cc/t/partners">Creators &amp; Partners</a></li>
+            <li><a href="javascript:void(0);">Advertising</a></li>
+            <li><a href="javascript:void(0);">Developers</a></li>
+        </ul>
+        <ul id="footer-links-secondary">
+            <li><a href="https://www.eracast.cc/t/terms">Terms</a></li>
+            <li><a href="javascript:void(0);">Privacy</a></li>
+            <li><a href="javascript:void(0);">Safety</a></li>
+            <li><a href="javascript:void(0);" onclick="return yt.www.feedback.start(yt.getConfig('FEEDBACK_LOCALE_LANGUAGE'), yt.getConfig('FEEDBACK_LOCALE_EXTRAS'));" id="reportbug">Send feedback</a></li>
+            <li><a href="https://www.eracast.cc/testtube">Try something new!</a></li>
+        </ul>
+        <ul class="pickers yt-uix-button-group" data-button-toggle-group="optional">
+            <li>
+                Language:
+                <button type="button" class=" yt-uix-button yt-uix-button-text" onclick=";return false;" data-button-toggle="true" data-picker-position="footer" data-button-menu-id="arrow-display" data-picker-key="language" data-button-action="yt.www.picker.load" role="button"><span class="yt-uix-button-content">English </span><img class="yt-uix-button-arrow" src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" alt=""></button>
+            </li>
+            <li>
+                Location:
+                <button type="button" class=" yt-uix-button yt-uix-button-text" onclick=";return false;" data-button-toggle="true" data-picker-position="footer" data-button-menu-id="arrow-display" data-picker-key="country" data-button-action="yt.www.picker.load" role="button"><span class="yt-uix-button-content">Worldwide </span><img class="yt-uix-button-arrow" src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" alt=""></button>
+            </li>
+            <li>
+                Safety:
+                <button type="button" class=" yt-uix-button yt-uix-button-text" onclick=";return false;" data-button-toggle="true" data-picker-position="footer" data-button-menu-id="arrow-display" data-picker-key="safetymode" data-button-action="yt.www.picker.load" role="button"><span class="yt-uix-button-content">Off
+                </span><img class="yt-uix-button-arrow" src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" alt=""></button>
+            </li>
+        </ul>
+        <div id="yt-picker-language-footer" class="yt-picker" style="display: none">
+            <p class="yt-spinner">
+                <img src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" class="yt-spinner-img" alt="">
+                Loading...
+            </p>
+        </div>
+        <div id="yt-picker-country-footer" class="yt-picker" style="display: none">
+            <p class="yt-spinner">
+                <img src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" class="yt-spinner-img" alt="">
+                Loading...
+            </p>
+        </div>
+        <div id="yt-picker-safetymode-footer" class="yt-picker" style="display: none">
+            <p class="yt-spinner">
+                <img src="//s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" class="yt-spinner-img" alt="">
+                Loading...
+            </p>
+        </div>
+    </div>
+</div>
+<!-- end footer -->
+</div>
 			<div id="playlist-bar" class="hid passive editable" data-video-url="/watch?v=&amp;feature=BFql&amp;playnext=1&amp;list=QL" data-list-id="" data-list-type="QL">
 				<div id="playlist-bar-bar-container">
 					<div id="playlist-bar-bar">

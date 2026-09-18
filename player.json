@@ -1,0 +1,687 @@
+{
+    "responseContext": {
+        "visitorData": "CgtHcWxPWG9HRHBNRSjAnPLSBjIKCgJNWRIEGgAgXA%3D%3D",
+        "serviceTrackingParams": [
+            {
+                "service": "GFEEDBACK",
+                "params": [
+                    {
+                        "key": "is_alc_surface",
+                        "value": "false"
+                    },
+                    {
+                        "key": "ipcc",
+                        "value": "0"
+                    },
+                    {
+                        "key": "is_viewed_live",
+                        "value": "True"
+                    },
+                    {
+                        "key": "logged_in",
+                        "value": "0"
+                    },
+                    {
+                        "key": "visitor_data",
+                        "value": "CgtHcWxPWG9HRHBNRSi_nPLSBjIKCgJNWRIEGgAgXA%3D%3D"
+                    }
+                ]
+            },
+            {
+                "service": "CSI",
+                "params": [
+                    {
+                        "key": "c",
+                        "value": "WEB"
+                    },
+                    {
+                        "key": "cver",
+                        "value": "2.20260709.01.00"
+                    },
+                    {
+                        "key": "yt_li",
+                        "value": "0"
+                    },
+                    {
+                        "key": "GetPlayer_rid",
+                        "value": "0x08edc0835a1f346c"
+                    }
+                ]
+            },
+            {
+                "service": "GUIDED_HELP",
+                "params": [
+                    {
+                        "key": "logged_in",
+                        "value": "0"
+                    }
+                ]
+            },
+            {
+                "service": "ECATCHER",
+                "params": [
+                    {
+                        "key": "client.version",
+                        "value": "2.20260709"
+                    },
+                    {
+                        "key": "client.name",
+                        "value": "WEB"
+                    }
+                ]
+            }
+        ],
+        "maxAgeSeconds": 0,
+        "mainAppWebResponseContext": {
+            "loggedOut": true,
+            "trackingParam": "k5_fmPxhoXZROMigVBb82Qy0HQW_O6FAGS4zFvz_tRgMzt-XrkGUSo3EczRMkuMYNLBwOcCw59TLtslLKPQGSS"
+        },
+        "responseId": "IhMIsYe_zKzelQMVwGgqCR1CtxEA",
+        "webResponseContextExtensionData": {
+            "webResponseContextPreloadData": {
+                "preloadMessageNames": [
+                    "playerErrorMessageRenderer",
+                    "buttonRenderer",
+                    "playerMicroformatRenderer",
+                    "mealbarPromoRenderer"
+                ]
+            },
+            "hasDecorated": true
+        }
+    },
+    "playabilityStatus": {
+        "status": "UNPLAYABLE",
+        "reason": "Video unavailable",
+        "errorScreen": {
+            "playerErrorMessageRenderer": {
+                "subreason": {
+                    "simpleText": "The page needs to be reloaded."
+                },
+                "reason": {
+                    "runs": [
+                        {
+                            "text": "The page needs to be reloaded."
+                        }
+                    ]
+                },
+                "proceedButton": {
+                    "buttonRenderer": {
+                        "style": "STYLE_PRIMARY",
+                        "size": "SIZE_DEFAULT",
+                        "isDisabled": false,
+                        "text": {
+                            "runs": [
+                                {
+                                    "text": "Reload"
+                                }
+                            ]
+                        },
+                        "trackingParams": "CAQQ8FsiEwixh7_MrN6VAxXAaCoJHUK3EQA=",
+                        "command": {
+                            "clickTrackingParams": "CAQQ8FsiEwixh7_MrN6VAxXAaCoJHUK3EQDKAQTr06V4",
+                            "signalAction": {
+                                "signal": "RELOAD_PAGE"
+                            }
+                        }
+                    }
+                },
+                "thumbnail": {
+                    "thumbnails": [
+                        {
+                            "url": "\/\/s.ytimg.com\/yts\/img\/meh7-vflGevej7.png",
+                            "width": 140,
+                            "height": 100
+                        }
+                    ]
+                },
+                "icon": {
+                    "iconType": "ERROR_OUTLINE"
+                }
+            }
+        },
+        "skip": {
+            "playabilityErrorSkipConfig": {
+                "skipOnPlayabilityError": false
+            }
+        },
+        "contextParams": "Q0FFU0FnZ0M="
+    },
+    "heartbeatParams": {
+        "intervalMilliseconds": "15000",
+        "softFailOnError": true,
+        "heartbeatServerData": "GAIgAbIBiAdBQ2loNlpONmdyMWdtT1dWWTluTk9mMGs4bms3TUFYbk1CVDdfN1hTU0o4eTgzZ1poT19IN0M3NXpsT3dJdEIzNjdRTXZXVmFGNXVNbnRVVEx1T1pvdXo0dDBlay1pMXdfcGwyQ194dlBfZDd1a283a2o2YllscGpNRHFrMEUwWVNFNENoV2lWRGNnMHlxVmFWTmVQdWJwTFlSZFpydEVIeUhaN1pqV3o5ZnFzM1J6Y1FEaXA5dzZxSjJTVjBpRlFXNFlJbjZCbTNUY05xZTdLUEVTZU16THA0WkYwSkdoMzg1WjhlNWNUTk1Va2xRMnJLenRIX3ZXdTZxXzduVldfU3NkVFlIUWUxTnVNVzUycGN5MjRiY2dyVmNVWm10a3EwVFZScldQbWFNZ0lNWGl4cDFQZmNxbThVVzRTb2lUQTNGNWN1ZW5sQzBsWVNPU0ZMaHVGUUl2bS0ydnVpUkE4NGtsSjkwRUtYaE9keEFHVFAtaGhYbnNWaks2UDVYX1dCUHNsU3RpYUM1M1dXeWtCQ3ZkQkZMM2dxRm1BR2pheDN3TzlNcGctYml6LWNJUU9tUFRhdjZLS2Jwd0JNY2hMbkJROTQ1WmZwamhDeVozNndYQ2hUaFhmaGllbGxMa2VPcm4tZkIwcEpGVEU3NkhkM0E2WnVFcU5VaF9ScnNDb2ItVENORGFvaGd6UGxucWVuRDRSM1RqdVBjN0xkYXgyMmh6UVF4TGhfN0tTLWhnaXpscHBvTU9ubFVmZnZwOGlweHNQYkNxZlBEcWJ5MW5QNDMxRU1NQXNVVDJzbWFpcEZnek9TaWYyM0kwRG5jdVkzb25qODYzTjdDOVlVTkd2TnNJZmJGY2lINE4zMHFKY2hLWk82alNyRkkxU0QxVWpGR3hzcERvdWhRbVQtMm1RRHpNY3QteHlVQUxMYXBVbUJZbTdPZFZoS3FXYW5SMDRTemc0S3VCQnBkU0FuZlRYM2h2VXFXYnFib3VEdUNlR05zbFVaUktsVm9fdFdfY1NSaXp3U3VhSl92YklscWVSa2FWRTd6X3Bxbkx5Vk94YzNPR01RVXExN0JkQ2hicWRlT1FjNWx6NUNLRGFWZXh5c2tLejAwZzltM1g2b0hGSlBldXRpSXYyVGRGOTU2VVgzUkhMNFZjQjhaSHA1RGd1WjJRM0ViSnVWUER5aXFMdGhoemVWaFpM"
+    },
+    "videoDetails": {
+        "videoId": "A7pyHb5Y3ag",
+        "title": "RAY STREAMER UNIVERSITY DAY 1 🏫",
+        "lengthSeconds": "0",
+        "isLive": true,
+        "keywords": [
+            "RayAsianBoy",
+            "RayAsianBoy Live",
+            "RayAsianBoy Livestream",
+            "Ray Live",
+            "RayAsianBoy Funny",
+            "Ray Funny",
+            "Ray Gets PRESSED By AI...",
+            "kai cenat",
+            "kai cenat live",
+            "kai cenat and ray",
+            "amp",
+            "amp and ray"
+        ],
+        "channelId": "UCLHkMOoQseOPi3HptU3dq5g",
+        "isOwnerViewing": false,
+        "shortDescription": "RAY STREAMER UNIVERSITY DAY 1 \n\n本影片可透過 YouTube 自動翻譯功能觀看中文字幕。點擊 CC → 自動翻譯 → 繁體中文，或選擇您偏好的語言。\n\nFOLLOW ME ON TWITCH: https:\/\/www.twitch.tv\/rayasianboy\n\nFollow My Socials:\nMain channel -  https:\/\/youtube.com\/@rayasianboy  \nInstagram - https:\/\/www.instagram.com\/rayasianboy_\/\nTikTok - https:\/\/www.tiktok.com\/@young11ray\n#RayAsianBoy #RayAsianBoyLive #RayAsianBoyStream",
+        "isCrawlable": true,
+        "isLiveDvrEnabled": true,
+        "thumbnail": {
+            "thumbnails": [
+                {
+                    "url": "https:\/\/i.ytimg.com\/vi\/A7pyHb5Y3ag\/hqdefault.jpg?v=a5&sqp=COCa8tIG-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLB_l7jdgOV2j_ZLpMbAw20Ek99U1A",
+                    "width": 168,
+                    "height": 94
+                },
+                {
+                    "url": "https:\/\/i.ytimg.com\/vi\/A7pyHb5Y3ag\/hqdefault.jpg?v=a5&sqp=COCa8tIG-oaymwEbCMQBEG5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLC1IK_MlDAiZ5QD7hT5RYDWOg--Rw",
+                    "width": 196,
+                    "height": 110
+                },
+                {
+                    "url": "https:\/\/i.ytimg.com\/vi\/A7pyHb5Y3ag\/hqdefault.jpg?v=a5&sqp=COCa8tIG-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLAOk-w-AtfmmwIKN9vj5eQFaB6jpw",
+                    "width": 246,
+                    "height": 138
+                },
+                {
+                    "url": "https:\/\/i.ytimg.com\/vi\/A7pyHb5Y3ag\/hqdefault.jpg?v=a5&sqp=COCa8tIG-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBKpPR8A_lKH3ILbmicFqa1VJGyNg",
+                    "width": 336,
+                    "height": 188
+                },
+                {
+                    "url": "https:\/\/i.ytimg.com\/vi\/A7pyHb5Y3ag\/maxresdefault.jpg?v=a5",
+                    "width": 1920,
+                    "height": 1080
+                }
+            ]
+        },
+        "liveChunkReadahead": 3,
+        "allowRatings": true,
+        "viewCount": "806316",
+        "author": "RAY LIVE",
+        "isLowLatencyLiveStream": false,
+        "isPrivate": false,
+        "isUnpluggedCorpus": false,
+        "latencyClass": "MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_NORMAL",
+        "isLiveContent": true,
+        "isTvfilmVideo": false
+    },
+    "microformat": {
+        "playerMicroformatRenderer": {
+            "thumbnail": {
+                "thumbnails": [
+                    {
+                        "url": "https:\/\/i.ytimg.com\/vi\/A7pyHb5Y3ag\/maxresdefault.jpg?v=a5",
+                        "width": 1280,
+                        "height": 720
+                    }
+                ]
+            },
+            "embed": {
+                "iframeUrl": "https:\/\/www.youtube.com\/embed\/A7pyHb5Y3ag",
+                "width": 640,
+                "height": 360
+            },
+            "title": {
+                "simpleText": "RAY STREAMER UNIVERSITY DAY 1 🏫"
+            },
+            "description": {
+                "simpleText": "RAY STREAMER UNIVERSITY DAY 1 \n\n本影片可透過 YouTube 自動翻譯功能觀看中文字幕。點擊 CC → 自動翻譯 → 繁體中文，或選擇您偏好的語言。\n\nFOLLOW ME ON TWITCH: https:\/\/www.twitch.tv\/rayasianboy\n\nFollow My Socials:\nMain channel -  https:\/\/youtube.com\/@rayasianboy  \nInstagram - https:\/\/www.instagram.com\/rayasianboy_\/\nTikTok - https:\/\/www.tiktok.com\/@young11ray\n#RayAsianBoy #RayAsianBoyLive #RayAsianBoyStream"
+            },
+            "ownerProfileUrl": "http:\/\/www.youtube.com\/@RayLiveee",
+            "externalChannelId": "UCLHkMOoQseOPi3HptU3dq5g",
+            "isFamilySafe": true,
+            "availableCountries": [
+                "AD",
+                "AE",
+                "AF",
+                "AG",
+                "AI",
+                "AL",
+                "AM",
+                "AO",
+                "AQ",
+                "AR",
+                "AS",
+                "AT",
+                "AU",
+                "AW",
+                "AX",
+                "AZ",
+                "BA",
+                "BB",
+                "BD",
+                "BE",
+                "BF",
+                "BG",
+                "BH",
+                "BI",
+                "BJ",
+                "BL",
+                "BM",
+                "BN",
+                "BO",
+                "BQ",
+                "BR",
+                "BS",
+                "BT",
+                "BV",
+                "BW",
+                "BY",
+                "BZ",
+                "CA",
+                "CC",
+                "CD",
+                "CF",
+                "CG",
+                "CH",
+                "CI",
+                "CK",
+                "CL",
+                "CM",
+                "CN",
+                "CO",
+                "CR",
+                "CU",
+                "CV",
+                "CW",
+                "CX",
+                "CY",
+                "CZ",
+                "DE",
+                "DJ",
+                "DK",
+                "DM",
+                "DO",
+                "DZ",
+                "EC",
+                "EE",
+                "EG",
+                "EH",
+                "ER",
+                "ES",
+                "ET",
+                "FI",
+                "FJ",
+                "FK",
+                "FM",
+                "FO",
+                "FR",
+                "GA",
+                "GB",
+                "GD",
+                "GE",
+                "GF",
+                "GG",
+                "GH",
+                "GI",
+                "GL",
+                "GM",
+                "GN",
+                "GP",
+                "GQ",
+                "GR",
+                "GS",
+                "GT",
+                "GU",
+                "GW",
+                "GY",
+                "HK",
+                "HM",
+                "HN",
+                "HR",
+                "HT",
+                "HU",
+                "ID",
+                "IE",
+                "IL",
+                "IM",
+                "IN",
+                "IO",
+                "IQ",
+                "IR",
+                "IS",
+                "IT",
+                "JE",
+                "JM",
+                "JO",
+                "JP",
+                "KE",
+                "KG",
+                "KH",
+                "KI",
+                "KM",
+                "KN",
+                "KP",
+                "KR",
+                "KW",
+                "KY",
+                "KZ",
+                "LA",
+                "LB",
+                "LC",
+                "LI",
+                "LK",
+                "LR",
+                "LS",
+                "LT",
+                "LU",
+                "LV",
+                "LY",
+                "MA",
+                "MC",
+                "MD",
+                "ME",
+                "MF",
+                "MG",
+                "MH",
+                "MK",
+                "ML",
+                "MM",
+                "MN",
+                "MO",
+                "MP",
+                "MQ",
+                "MR",
+                "MS",
+                "MT",
+                "MU",
+                "MV",
+                "MW",
+                "MX",
+                "MY",
+                "MZ",
+                "NA",
+                "NC",
+                "NE",
+                "NF",
+                "NG",
+                "NI",
+                "NL",
+                "NO",
+                "NP",
+                "NR",
+                "NU",
+                "NZ",
+                "OM",
+                "PA",
+                "PE",
+                "PF",
+                "PG",
+                "PH",
+                "PK",
+                "PL",
+                "PM",
+                "PN",
+                "PR",
+                "PS",
+                "PT",
+                "PW",
+                "PY",
+                "QA",
+                "RE",
+                "RO",
+                "RS",
+                "RU",
+                "RW",
+                "SA",
+                "SB",
+                "SC",
+                "SD",
+                "SE",
+                "SG",
+                "SH",
+                "SI",
+                "SJ",
+                "SK",
+                "SL",
+                "SM",
+                "SN",
+                "SO",
+                "SR",
+                "SS",
+                "ST",
+                "SV",
+                "SX",
+                "SY",
+                "SZ",
+                "TC",
+                "TD",
+                "TF",
+                "TG",
+                "TH",
+                "TJ",
+                "TK",
+                "TL",
+                "TM",
+                "TN",
+                "TO",
+                "TR",
+                "TT",
+                "TV",
+                "TW",
+                "TZ",
+                "UA",
+                "UG",
+                "UM",
+                "US",
+                "UY",
+                "UZ",
+                "VA",
+                "VC",
+                "VE",
+                "VG",
+                "VI",
+                "VN",
+                "VU",
+                "WF",
+                "WS",
+                "YE",
+                "YT",
+                "ZA",
+                "ZM",
+                "ZW"
+            ],
+            "isUnlisted": false,
+            "hasYpcMetadata": false,
+            "viewCount": "806316",
+            "category": "Comedy",
+            "publishDate": "2026-07-18T10:39:18-07:00",
+            "ownerChannelName": "RAY LIVE",
+            "liveBroadcastDetails": {
+                "isLiveNow": true,
+                "startTimestamp": "2026-07-18T19:02:02+00:00"
+            },
+            "uploadDate": "2026-07-18T10:39:18-07:00",
+            "isShortsEligible": false,
+            "externalVideoId": "A7pyHb5Y3ag",
+            "likeCount": "12332",
+            "canonicalUrl": "https:\/\/www.youtube.com\/watch?v=A7pyHb5Y3ag"
+        }
+    },
+    "trackingParams": "CAAQu2kiEwixh7_MrN6VAxXAaCoJHUK3EQDKAQTr06V4",
+    "messages": [
+        {
+            "mealbarPromoRenderer": {
+                "icon": {
+                    "thumbnails": [
+                        {
+                            "url": "https:\/\/www.gstatic.com\/youtube\/img\/promos\/growth\/6ad5a99c727579634bc3e2fb67562a2621170bdd11578967392667be5a05c5e4_384x384.png",
+                            "width": 384,
+                            "height": 384
+                        }
+                    ]
+                },
+                "messageTexts": [
+                    {
+                        "runs": [
+                            {
+                                "text": "Get YouTube without the ads"
+                            }
+                        ]
+                    }
+                ],
+                "actionButton": {
+                    "buttonRenderer": {
+                        "style": "STYLE_MONO_FILLED",
+                        "size": "SIZE_DEFAULT",
+                        "text": {
+                            "runs": [
+                                {
+                                    "text": "1 month free"
+                                }
+                            ]
+                        },
+                        "trackingParams": "CAMQ7G8iEwixh7_MrN6VAxXAaCoJHUK3EQA=",
+                        "command": {
+                            "clickTrackingParams": "CAMQ7G8iEwixh7_MrN6VAxXAaCoJHUK3EQDKAQTr06V4",
+                            "commandExecutorCommand": {
+                                "commands": [
+                                    {
+                                        "clickTrackingParams": "CAMQ7G8iEwixh7_MrN6VAxXAaCoJHUK3EQDKAQTr06V4",
+                                        "commandMetadata": {
+                                            "webCommandMetadata": {
+                                                "url": "\/premium?ybp=Eg9GRXdoYXRfdG9fd2F0Y2gqEmRtZWEtYWNxLWMtZWdzb1ZEZDoaCAYYASoUChJkbWVhLWFjcS1jLWVnc29WRGQ%253D",
+                                                "webPageType": "WEB_PAGE_TYPE_BROWSE",
+                                                "rootVe": 93498,
+                                                "apiUrl": "\/youtubei\/v1\/browse"
+                                            }
+                                        },
+                                        "browseEndpoint": {
+                                            "browseId": "SPunlimited",
+                                            "params": "kgNBEg9GRXdoYXRfdG9fd2F0Y2gqEmRtZWEtYWNxLWMtZWdzb1ZEZDoaCAYYASoUChJkbWVhLWFjcS1jLWVnc29WRGQ%3D"
+                                        }
+                                    },
+                                    {
+                                        "commandMetadata": {
+                                            "webCommandMetadata": {
+                                                "sendPost": true,
+                                                "apiUrl": "\/youtubei\/v1\/feedback"
+                                            }
+                                        },
+                                        "feedbackEndpoint": {
+                                            "feedbackToken": "AB9zfpKEPVmHdYmjXpxWiYErKzzar-q0Z4WcTPtRwRqp14dyiCYvQvQ1BoOYK-wxUnM2LpcqfSq0Iy0BFAPKoov2A2PPSPZZ4ecw9yee6Y-0UzVQHW1gahSHXP8XP3k5wHRClUuw2poJILvPcTWqOcB0ddolvhN5-LrRXo0kG995Lhfxb4vvWrs",
+                                            "uiActions": {
+                                                "hideEnclosingContainer": true
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "dismissButton": {
+                    "buttonRenderer": {
+                        "style": "STYLE_MONO_TONAL",
+                        "size": "SIZE_DEFAULT",
+                        "text": {
+                            "runs": [
+                                {
+                                    "text": "No thanks"
+                                }
+                            ]
+                        },
+                        "trackingParams": "CAIQ7W8iEwixh7_MrN6VAxXAaCoJHUK3EQA=",
+                        "command": {
+                            "clickTrackingParams": "CAIQ7W8iEwixh7_MrN6VAxXAaCoJHUK3EQDKAQTr06V4",
+                            "commandExecutorCommand": {
+                                "commands": [
+                                    {
+                                        "clickTrackingParams": "CAIQ7W8iEwixh7_MrN6VAxXAaCoJHUK3EQDKAQTr06V4",
+                                        "commandMetadata": {
+                                            "webCommandMetadata": {
+                                                "sendPost": true,
+                                                "apiUrl": "\/youtubei\/v1\/feedback"
+                                            }
+                                        },
+                                        "feedbackEndpoint": {
+                                            "feedbackToken": "AB9zfpLqRbAqUu0dm9DwsEv7ncUSBnAw4LM6uzbffr8x8Fvx4sebgSu6n4jqcKG0WHEz-IRLtAgG4kAGBDWuNiDmDjdx1Mp4G9oRxWMHiBxJjz-2XKb7lVFlDARJ4k3r2X_jX1KY0UX0cmFZgSKnmr_A49B37wQNOeQ5DXQtCYufZZ5JugyqobM",
+                                            "uiActions": {
+                                                "hideEnclosingContainer": true
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "triggerCondition": "TRIGGER_CONDITION_POST_AD",
+                "style": "STYLE_MODERN",
+                "trackingParams": "CAEQ42kYACITCLGHv8ys3pUDFcBoKgkdQrcRAA==",
+                "impressionEndpoints": [
+                    {
+                        "clickTrackingParams": "CAEQ42kYACITCLGHv8ys3pUDFcBoKgkdQrcRAMoBBOvTpXg=",
+                        "commandMetadata": {
+                            "webCommandMetadata": {
+                                "sendPost": true,
+                                "apiUrl": "\/youtubei\/v1\/feedback"
+                            }
+                        },
+                        "feedbackEndpoint": {
+                            "feedbackToken": "AB9zfpLBFPLH7NxH4lgkB-7RGHW9BfCqTKfig2-O6EVZweP1wdCwngzbJKFkH9K2xtfTtGF5W_dz-U9hsq9r7_mFFbfZ38HMiBwmZeOsTEbLXpnmdZWiQK8S9XvDMb6F591432CWDtNgfUYDyRtzUcvYWqoh-JudR2Tre5BeJg7U_8fHXYgfQnY",
+                            "uiActions": {
+                                "hideEnclosingContainer": false
+                            }
+                        }
+                    }
+                ],
+                "isVisible": true,
+                "messageTitle": {
+                    "runs": [
+                        {
+                            "text": "YouTube Premium"
+                        }
+                    ]
+                },
+                "iconDark": {
+                    "thumbnails": [
+                        {
+                            "url": "https:\/\/www.gstatic.com\/youtube\/img\/promos\/growth\/6ad5a99c727579634bc3e2fb67562a2621170bdd11578967392667be5a05c5e4_384x384.png",
+                            "width": 384,
+                            "height": 384
+                        }
+                    ]
+                },
+                "supplementalText": {
+                    "runs": [
+                        {
+                            "text": "Terms apply. Cancel anytime"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "adBreakHeartbeatParams": "Q0FBJTNE",
+    "frameworkUpdates": {
+        "entityBatchUpdate": {
+            "mutations": [
+                {
+                    "entityKey": "Eg0KC0E3cHlIYjVZM2FnIPYBKAE%3D",
+                    "type": "ENTITY_MUTATION_TYPE_REPLACE",
+                    "payload": {
+                        "offlineabilityEntity": {
+                            "key": "Eg0KC0E3cHlIYjVZM2FnIPYBKAE%3D",
+                            "addToOfflineButtonState": "ADD_TO_OFFLINE_BUTTON_STATE_UNKNOWN"
+                        }
+                    }
+                }
+            ],
+            "timestamp": {
+                "seconds": "1784450624",
+                "nanos": 34385000
+            }
+        }
+    }
+}

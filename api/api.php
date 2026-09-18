@@ -6,6 +6,118 @@
 
 require_once($_SERVER['DOCUMENT_ROOT'] . '/api/servermain.php');
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// ✅ ИСПРАВЛЕНО: Функции для извлечения всех видео качеств
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Определение качества видео по itag коду YouTube
+if (!function_exists('getQualityFromItag')) {
+function getQualityFromItag($itag) {
+    $map = [
+        18 => '360p',   // MP4 360p
+        22 => '720p',   // MP4 720p
+        34 => '360p',   // FLV 360p
+        35 => '480p',   // FLV 480p
+        37 => '1080p',  // MP4 1080p
+        43 => '360p',   // WebM 360p
+        44 => '480p',   // WebM 480p
+        45 => '720p',   // WebM 720p
+        46 => '1080p',  // WebM 1080p
+        // Адаптивные форматы
+        133 => '240p',  // H264 240p
+        134 => '360p',  // H264 360p
+        135 => '480p',  // H264 480p
+        136 => '720p',  // H264 720p
+        137 => '1080p', // H264 1080p
+        242 => '240p',  // VP9 240p
+        243 => '360p',  // VP9 360p
+        244 => '480p',  // VP9 480p
+        247 => '720p',  // VP9 720p
+        248 => '1080p', // VP9 1080p
+    ];
+    return $map[$itag] ?? null;
+}
+}
+
+
+// Извлечение и сортировка всех доступных форматов видео
+if (!function_exists('extractAllVideoFormats')) {
+function extractAllVideoFormats($playerRaw) {
+    $formats = [];
+    
+    // ─── АДАПТИВНЫЕ ФОРМАТЫ (видео + аудио отдельно) ────────────────────
+    if (!empty($playerRaw['streamingData']['adaptiveFormats'])) {
+        foreach ($playerRaw['streamingData']['adaptiveFormats'] as $fmt) {
+            if (empty($fmt['url']) || empty($fmt['mimeType'])) continue;
+            
+            // Берем только видео (не аудио)
+            if (strpos($fmt['mimeType'], 'video') === false) continue;
+            
+            // Определяем качество (высоту)
+            $height = $fmt['height'] ?? 0;
+            if ($height === 0) {
+                if (preg_match('/height=(\d+)/', $fmt['mimeType'], $m)) {
+                    $height = (int)$m[1];
+                } else {
+                    continue;
+                }
+            }
+            
+            if ($height > 0) {
+                $formats[] = [
+                    'quality'   => $height . 'p',
+                    'height'    => $height,
+                    'mimeType'  => $fmt['mimeType'],
+                    'url'       => $fmt['url'],
+                    'type'      => 'adaptive',
+                    'itag'      => $fmt['itag'] ?? 0,
+                ];
+            }
+        }
+    }
+    
+    // ─── ОБЫЧНЫЕ ФОРМАТЫ (полные видео) ──────────────────────────────────
+    if (!empty($playerRaw['streamingData']['formats'])) {
+        foreach ($playerRaw['streamingData']['formats'] as $fmt) {
+            if (empty($fmt['url'])) continue;
+            
+            $itag = $fmt['itag'] ?? 0;
+            $quality = getQualityFromItag($itag);
+            
+            if ($quality !== null) {
+                $formats[] = [
+                    'quality'   => $quality,
+                    'mimeType'  => $fmt['mimeType'] ?? 'video/mp4',
+                    'url'       => $fmt['url'],
+                    'type'      => 'simple',
+                    'itag'      => $itag,
+                ];
+            }
+        }
+    }
+    
+    // ─── СОРТИРОВКА: от лучшего к худшему ──────────────────────────────────
+    usort($formats, function($a, $b) {
+        $heightA = (int)str_replace('p', '', $a['quality']);
+        $heightB = (int)str_replace('p', '', $b['quality']);
+        return $heightB <=> $heightA;
+    });
+    
+    // ─── УДАЛЕНИЕ ДУБЛИКАТОВ ─────────────────────────────────────────────
+    $unique = [];
+    $seenQualities = [];
+    foreach ($formats as $fmt) {
+        if (!in_array($fmt['quality'], $seenQualities)) {
+            $unique[] = $fmt;
+            $seenQualities[] = $fmt['quality'];
+        }
+    }
+    
+    return $unique;
+}
+}
+
+
 // ─── Defaults ─────────────────────────────────────────────────────────────────
 $videoTitle           = null;
 $videoAuthor          = null;
@@ -112,8 +224,31 @@ $Calender['Hours']   = (int)floor($rem / 3600);  $rem %= 3600;
 $Calender['Minutes'] = (int)floor($rem / 60);
 $Calender['Seconds'] = $rem % 60;
 
+// ✅ ИСПРАВЛЕНО: Просмотры как полные ЧИСЛА БЕЗ ЗАПЯТЫХ (для API)
 $rawViews = (int)($videoDetails['viewCount'] ?? 0);
-$viewCount = $rawViews > 0 ? number_format($rawViews, 0, '.', ',') : null;
+
+// ✅ ИСПРАВЛЕНО: Fallback на RYD API если нет данных в InnerTube
+if ($rawViews === 0 && !empty($__ratings['viewCount'])) {
+    $rawViews = (int)$__ratings['viewCount'];
+}
+
+// Экспортируем как число БЕЗ форматирования
+$viewCount = $rawViews > 0 ? (string)$rawViews : null;
+
+// ─── Добавляем информацию о PREMIERED ─────────────────────────────────────
+// ✅ ИСПРАВЛЕНО: Проверяем премьеру видео
+$isPremiered = false;
+$premieredDate = null;
+$videoPublishType = 'Uploaded';
+
+// Проверяем есть ли информация о премьере в InnerTube
+if (!empty($vd['isScheduledLiveVideo'])) {
+    $isPremiered = true;
+    $videoPublishType = 'Premiered';
+    if (!empty($vd['publishDate'])) {
+        $premieredDate = $vd['publishDate'];
+    }
+}
 
 $videoTags = !empty($videoDetails['keywords'])
     ? implode(',', $videoDetails['keywords'])
@@ -176,28 +311,21 @@ if ($plId !== '' && preg_match('/^[A-Za-z0-9_-]{10,60}$/', $plId)) {
 }
 
 // ── Stream formats ────────────────────────────────────────────────────────────
-$allFormats = array_merge(
-    $streamingData['formats']         ?? [],
-    $streamingData['adaptiveFormats'] ?? []
-);
-foreach ($allFormats as $fmt) {
-    $mimeType = $fmt['mimeType'] ?? '';
-    if (empty($mimeType)) continue;
+// ✅ ИСПРАВЛЕНО: Используем новую функцию для сбора ВСЕХ видео качеств
+$streamFormats = extractAllVideoFormats($playerRaw);
+
+// Выбираем лучший формат по умолчанию
+$highestQualityFormat = !empty($streamFormats) ? $streamFormats[0] : null;
+
+// Fallback на HLS (для live трансляций)
+if (empty($streamFormats) && !empty($playerRaw['streamingData']['hlsManifestUrl'])) {
     $streamFormats[] = [
-        'itag'     => $fmt['itag']           ?? 0,
-        'mimeType' => $mimeType,
-        'quality'  => $fmt['qualityLabel']   ?? ($fmt['quality'] ?? ''),
-        'width'    => $fmt['width']          ?? 0,
-        'height'   => $fmt['height']         ?? 0,
-        'fps'      => $fmt['fps']            ?? 0,
-        'bitrate'  => $fmt['averageBitrate'] ?? ($fmt['bitrate'] ?? 0),
-        'url'      => $fmt['url']            ?? '',
+        'quality'   => 'HLS Live',
+        'url'       => $playerRaw['streamingData']['hlsManifestUrl'],
+        'mimeType'  => 'application/x-mpegURL',
+        'type'      => 'hls',
     ];
-}
-$muxed = array_filter($streamFormats, fn($f) => !empty($f['url']) && !str_contains($f['mimeType'], 'audio/'));
-if (!empty($muxed)) {
-    usort($muxed, fn($a, $b) => (int)$b['height'] - (int)$a['height']);
-    $highestQualityFormat = reset($muxed);
+    $highestQualityFormat = $streamFormats[0];
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -334,6 +462,29 @@ if ($nextRaw !== null) {
         _collect_related_renderers($nextRaw, $relItems);
     }
 
+
+// Выбирает лучшую строку просмотров: точное «1,234,567 views» важнее «1.2M views».
+function _best_view_text(string ...$candidates): string {
+    $best = '';
+    $bestScore = -1;
+    foreach ($candidates as $c) {
+        $c = trim((string)$c);
+        if ($c === '' || !preg_match('/\d/', $c)) continue;
+        if (stripos($c, 'view') === false && stripos($c, 'watching') === false) continue;
+        // точное число с запятыми / без KMB — выше приоритет
+        $hasAbbrev = (bool)preg_match('/\d\s*[KMB]/iu', $c);
+        $digits = preg_replace('/[^\d]/', '', $c);
+        $score = strlen((string)$digits);
+        if (!$hasAbbrev) $score += 100;          // точное важнее сокращённого
+        if (strpos($c, ',') !== false) $score += 10;
+        if ($score > $bestScore) {
+            $bestScore = $score;
+            $best = $c;
+        }
+    }
+    return $best;
+}
+
     // Парсер нового lockupViewModel → тот же формат, что и compactVideoRenderer
     function _parse_lockup_view_model(array $lv): ?array {
         if (($lv['contentType'] ?? '') !== 'LOCKUP_CONTENT_TYPE_VIDEO') return null;
@@ -344,24 +495,55 @@ if ($nextRaw !== null) {
         $rtitle = trim($md['title']['content'] ?? '');
         if ($rtitle === '') return null;
 
-        // metadataRows: части бывают «канал», «N views», «N years ago» —
-        // распознаём по содержимому, а не по позиции (на вкладках канала
-        // строки-«канал» нет вообще)
-        $rauthor = ''; $rviews = ''; $rauthorId = '';
+        // metadataRows: «канал», «N views», «N years ago» — по содержимому.
+        // Текст может быть в content / runs / accessibility.
+        $rauthor = ''; $rviews = ''; $rauthorId = ''; $viewCandidates = [];
         $rows = $md['metadata']['contentMetadataViewModel']['metadataRows'] ?? [];
         foreach ($rows as $row) {
             foreach ($row['metadataParts'] ?? [] as $part) {
-                $txt = trim($part['text']['content'] ?? '');
-                if ($txt === '') continue;
-                if (stripos($txt, 'view') !== false) {
-                    if ($rviews === '') $rviews = expand_count($txt);
-                } elseif (preg_match('/\bago$|^Streamed|^Scheduled|^Premiere/i', $txt)) {
-                    // дата — для related не нужна
-                } elseif ($rauthor === '') {
-                    $rauthor = $txt;
+                $txt = trim((string)($part['text']['content'] ?? ''));
+                if ($txt === '' && !empty($part['text']['runs'])) {
+                    foreach ($part['text']['runs'] as $r) $txt .= $r['text'] ?? '';
+                    $txt = trim($txt);
+                }
+                // accessibility часто содержит ТОЧНОЕ «8,312,456 views», content — «8.3M views»
+                $acc = trim((string)($part['text']['accessibility']['accessibilityData']['label'] ?? ''));
+
+                // Оба кандидата — _best_view_text выберет точное число
+                foreach ([$acc, $txt] as $cand) {
+                    if ($cand !== '' && (stripos($cand, 'view') !== false || stripos($cand, 'watching') !== false)) {
+                        $viewCandidates[] = $cand;
+                    }
+                }
+
+                $forMeta = $txt !== '' ? $txt : $acc;
+                if ($forMeta === '') continue;
+                if (stripos($forMeta, 'view') !== false || stripos($forMeta, 'watching') !== false) {
+                    continue;
+                }
+                if (preg_match('/\bago$|^Streamed|^Scheduled|^Premiere/i', $forMeta)) {
+                    continue;
+                }
+                if ($rauthor === '') {
+                    $rauthor = $forMeta;
                     $rauthorId = $part['text']['commandRuns'][0]['onTap']['innertubeCommand']['browseEndpoint']['browseId'] ?? '';
                 }
             }
+        }
+        // Лучший кандидат из metadataParts (точное число > «1.2M»)
+        if (!empty($viewCandidates)) {
+            $rviews = expand_count(_best_view_text(...$viewCandidates));
+        }
+        // Фолбэк: любая строка с views/watching внутри metadata
+        if ($rviews === '') {
+            $found = [];
+            array_walk_recursive($md, function ($val) use (&$found) {
+                if (!is_string($val)) return;
+                if (stripos($val, 'view') !== false || stripos($val, 'watching') !== false) {
+                    $found[] = $val;
+                }
+            });
+            if ($found) $rviews = expand_count(_best_view_text(...$found));
         }
         if (empty($rauthorId)) {
             $rauthorId = $md['image']['decoratedAvatarViewModel']['rendererContext']['commandContext']['onTap']['innertubeCommand']['browseEndpoint']['browseId'] ?? '';
@@ -444,9 +626,22 @@ if ($nextRaw !== null) {
             }
         }
 
-        // Просмотры — полным числом с запятыми, как в 2012
-        $rviewsRaw = $vr['viewCountText']['simpleText']
-            ?? ($vr['shortViewCountText']['simpleText'] ?? '');
+        // Просмотры: accessibility (часто ТОЧНОЕ «1,234,567 views») важнее simpleText («1.2M»).
+        $vcRuns = $svcRuns = '';
+        if (!empty($vr['viewCountText']['runs'])) {
+            foreach ($vr['viewCountText']['runs'] as $r) $vcRuns .= $r['text'] ?? '';
+        }
+        if (!empty($vr['shortViewCountText']['runs'])) {
+            foreach ($vr['shortViewCountText']['runs'] as $r) $svcRuns .= $r['text'] ?? '';
+        }
+        $rviewsRaw = _best_view_text(
+            $vr['viewCountText']['accessibility']['accessibilityData']['label'] ?? '',
+            $vr['shortViewCountText']['accessibility']['accessibilityData']['label'] ?? '',
+            $vr['viewCountText']['simpleText'] ?? '',
+            $vr['shortViewCountText']['simpleText'] ?? '',
+            $vcRuns,
+            $svcRuns
+        );
         $rviews = $rviewsRaw !== '' ? expand_count($rviewsRaw) : '';
 
         $relatedVideos[] = [
@@ -539,7 +734,21 @@ if (empty($relatedVideos)) {
                         if (!empty($tArr[0]['url'])) $thumb = $tArr[0]['url'];
                     }
                     $dur   = $v['lengthText']['simpleText'] ?? '';
-                    $vraw  = $v['viewCountText']['simpleText'] ?? '';
+                    $vcR = $svcR = '';
+                    if (!empty($v['viewCountText']['runs'])) {
+                        foreach ($v['viewCountText']['runs'] as $r) $vcR .= $r['text'] ?? '';
+                    }
+                    if (!empty($v['shortViewCountText']['runs'])) {
+                        foreach ($v['shortViewCountText']['runs'] as $r) $svcR .= $r['text'] ?? '';
+                    }
+                    $vraw = _best_view_text(
+                        $v['viewCountText']['accessibility']['accessibilityData']['label'] ?? '',
+                        $v['shortViewCountText']['accessibility']['accessibilityData']['label'] ?? '',
+                        $v['viewCountText']['simpleText'] ?? '',
+                        $v['shortViewCountText']['simpleText'] ?? '',
+                        $vcR,
+                        $svcR
+                    );
                     $views = $vraw !== '' ? expand_count($vraw) : '';
                     $out[] = [
                         'id'        => $rid,
@@ -558,6 +767,19 @@ if (empty($relatedVideos)) {
         }
         _collect_search_videos($searchRaw, $relatedVideos, $video_id);
     }
+}
+
+// ── Точные просмотры related (8,312,456 вместо 8,300,000 из «8.3M») ──────────
+if (!empty($relatedVideos) && function_exists('yt_batch_exact_views')) {
+    $relIds = array_column($relatedVideos, 'id');
+    $exactViews = yt_batch_exact_views($relIds, 20);
+    foreach ($relatedVideos as &$rv) {
+        $eid = $rv['id'] ?? '';
+        if ($eid !== '' && !empty($exactViews[$eid])) {
+            $rv['views'] = (string)(int)$exactViews[$eid];
+        }
+    }
+    unset($rv);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -733,8 +955,10 @@ foreach (array_slice($relatedVideos, 0, 12) as $rv) {
     if (preg_match('/^(?:(\d+):)?(\d+):(\d{2})$/', $rv['duration'], $dm) === 1) {
         $lenSec = ((int)($dm[1] ?: 0)) * 3600 + ((int)$dm[2]) * 60 + (int)$dm[3];
     }
+    // expand_count() отдаёт «1,234,567 views» — для rvs нужен только digits
+    $rvsViews = preg_replace('/[^\d]/', '', (string)($rv['views'] ?? ''));
     $playerRvsParts[] = http_build_query([
-        'view_count'     => $rv['views'],
+        'view_count'     => $rvsViews !== '' ? $rvsViews : '0',
         'author'         => $rv['author'],
         'title'          => $rv['title'],
         'length_seconds' => $lenSec,

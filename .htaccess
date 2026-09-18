@@ -2,6 +2,7 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteRule ^logout$ logout.php [L]
 
 # Server-only code, dependencies and caches must never be downloadable.
 RewriteRule ^(?:includes|vendor|cache)(?:/|$) - [F,L,NC]

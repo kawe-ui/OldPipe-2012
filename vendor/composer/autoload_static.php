@@ -24,6 +24,10 @@ class ComposerStaticInit3180b8cfa504da2055e04ffab961cf36
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
         ),
+        'B' =>
+        array (
+            'BlueLibraries\\Dns\\' => 18,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -47,6 +51,10 @@ class ComposerStaticInit3180b8cfa504da2055e04ffab961cf36
         'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'BlueLibraries\\Dns\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/bluelibraries/dns/src',
         ),
     );
 

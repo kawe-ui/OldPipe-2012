@@ -4,8 +4,62 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5247dfea534517d23389152f6c663d71",
+    "content-hash": "f9889fe81a6565f7e3b729edac90e730",
     "packages": [
+        {
+            "name": "bluelibraries/dns",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bluelibraries/dns.git",
+                "reference": "92208ec7fdeba26e0a1795904bc452fe92624e3a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bluelibraries/dns/zipball/92208ec7fdeba26e0a1795904bc452fe92624e3a",
+                "reference": "92208ec7fdeba26e0a1795904bc452fe92624e3a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-sockets": "*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "9.6.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "BlueLibraries\\Dns\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Molnar Raul Alexandru",
+                    "email": "raul2molnar@gmail.com",
+                    "homepage": "https://www.linkedin.com/in/raulmolnar/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP DNS utility",
+            "homepage": "https://github.com/bluelibraries/dns",
+            "keywords": [
+                "bluelibraries",
+                "dns",
+                "php",
+                "records"
+            ],
+            "support": {
+                "issues": "https://github.com/bluelibraries/dns/issues",
+                "source": "https://github.com/bluelibraries/dns/tree/1.1.1"
+            },
+            "time": "2023-04-05T18:43:50+00:00"
+        },
         {
             "name": "guzzlehttp/guzzle",
             "version": "7.10.0",

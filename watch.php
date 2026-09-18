@@ -84,6 +84,9 @@ var yt = yt || {};yt.timing = yt.timing || {};yt.timing.data_ = yt.timing.data_ 
 
 
 
+
+
+
   <script>
     var gYouTubePlayerReady = false;
     if (!window['onYouTubePlayerReady']) {
@@ -152,6 +155,9 @@ if (window.yt.timing) {yt.timing.tick("ct");}    </script>
   $ytIsVideoOwner = !empty($ytLoggedIn) && !empty($videoAuthorId)
       && ($ytUserChannelId ?? '') === $videoAuthorId;
 ?>
+
+  <!-- begin watch-headline-container -->
+  <div id="watch-headline-container">
 <?php if ($ytIsVideoOwner): ?>
   <div id="watch-owner-container">
             <div id="masthead-subnav" class="yt-nav yt-nav-dark">
@@ -201,16 +207,23 @@ if (window.yt.timing) {yt.timing.tick("ct");}    </script>
 
       </div>
 <?php endif; ?>
-  <!-- begin watch-headline-container -->
-  <div id="watch-headline-container">
+
       <div id="watch-headline" class="watch-headline">
+<?php if (!empty($ytIsVideoOwner)): ?>
+        <form id="watch-headline-title-form" action="/watch_inlineedit_ajax?action_save_video=1" method="POST" class="hid">
+    <input type="hidden" name="session_token" value="<?php echo htmlspecialchars(yt_session_token()); ?>">
+    <input name="video_id" value="<?php echo htmlspecialchars($video_id); ?>" type="hidden">
+    <span class=" yt-uix-form-input-container "><input class="yt-uix-form-input-text " name="field_myvideo_title" value="<?php echo htmlspecialchars($videoTitle); ?>"></span>
+    <span class="form-buttons">
+      <button type="submit" class=" yt-uix-button yt-uix-button-primary" onclick=";return true;" role="button"><span class="yt-uix-button-content">Save </span></button>
+      <button type="button" id="watch-headline-title-reset" onclick=";return false;" class=" yt-uix-button yt-uix-button-default" role="button"><span class="yt-uix-button-content">Cancel </span></button>
+    </span>
+  </form>
+<?php endif; ?>
       <h1 id="watch-headline-title">
-    
-
-  <span id="eow-title" class=" " dir="ltr" title="<?php echo $videoTitle ?>">
-    <?php echo $videoTitle ?>
+  <span id="eow-title" class=" " dir="ltr" title="<?php echo htmlspecialchars($videoTitle); ?>">
+    <?php echo htmlspecialchars($videoTitle); ?>
   </span>
-
   </h1>
 
 
@@ -221,10 +234,13 @@ if (window.yt.timing) {yt.timing.tick("ct");}    </script>
           ? yt_action_is_subscribed($videoAuthorId)
           : false;
       ?>
-      <span class="yt-uix-button-group"><button href="/user/<?php echo $videoAuthor ?>?feature=watch" type="button" class="start yt-uix-button yt-uix-button-default" onclick=";window.location.href=this.getAttribute(&#39;href&#39;);return false;"  role="button"><span class="yt-uix-button-content"><?php echo $videoAuthor ?> </span></button><div class="yt-subscription-button-hovercard yt-uix-hovercard" data-card-class="watch-subscription-card"><span class="yt-uix-button-context-light yt-uix-button-subscription-container"><?php if (!empty($ytLoggedIn) && !empty($videoAuthorId)): ?><button onclick=";subscribe();return false;" id="subscribe-button" type="button" class="yt-subscription-button end yt-uix-button yt-uix-button-subscription<?php echo $ytIsSubscribed ? ' subscribed' : '' ?>" data-subscription-value="<?php echo htmlspecialchars($videoAuthorId) ?>" data-subscription-feature="watch" role="button"><?php else: ?><button href="https://accounts.google.com/ServiceLogin?passive=true&amp;continue=http%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26continue_action%3DW44gUqKyW4iu3BQlLP70rki8Rvzk1-Si7K4SiEGMjxPHlPqH4ioQQYwzgevbefezCHbACVPbuyv4vgpygja8NApIt5QX0o2QYAmbmYSSLQw=%26feature%3Dsubscribe%26hl%3Den_US%26next%3D%252Fwatch%253Fv%253D<?php echo $video_id ?>%26nomobiletemp%3D1&amp;uilel=3&amp;hl=en_US&amp;service=youtube" onclick=";window.location.href=this.getAttribute(&#39;href&#39;);return false;" type="button" class="yt-subscription-button yt-subscription-button-js-default end  yt-uix-button yt-uix-button-subscription" data-enable-hovercard="true" data-subscription-value="<?php echo htmlspecialchars($videoAuthorId ?? '') ?>" data-force-position="true" data-position="topright" data-subscription-feature="watch" data-subscription-type="" data-sessionlink="ei=CJ6l17ndhLQCFeOCRAodBDLN_A%3D%3D&amp;feature=watch" role="button"><?php endif; ?><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-subscribe" src="/yts/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-uix-button-valign"></span></span><span class="yt-uix-button-content">  <span class="subscribe-label">Subscribe</span>
+      <span class="yt-uix-button-group"><button href="/user/<?php echo $videoAuthor ?>?feature=watch" type="button" class="start yt-uix-button yt-uix-button-default" onclick=";window.location.href=this.getAttribute(&#39;href&#39;);return false;"  role="button"><span class="yt-uix-button-content"><?php echo $videoAuthor ?> </span></button><div class="yt-subscription-button-hovercard yt-uix-hovercard" data-card-class="watch-subscription-card"><span class="yt-uix-button-context-light yt-uix-button-subscription-container"><?php if (!empty($ytIsVideoOwner)): ?>
+  <button disabled="True" onclick=";return false;" title="No need to subscribe to yourself!" type="button" class="yt-subscription-button end yt-uix-button yt-uix-button-default yt-uix-tooltip" role="button"><span class="yt-uix-button-content">Subscribe </span></button>
+<span class="yt-subscription-button-disabled-mask"></span>
+<?php elseif (!empty($ytLoggedIn) && !empty($videoAuthorId)): ?><button onclick=";subscribe();return false;" id="subscribe-button" type="button" class="yt-subscription-button end yt-uix-button yt-uix-button-subscription<?php echo $ytIsSubscribed ? ' subscribed' : '' ?>" data-subscription-value="<?php echo htmlspecialchars($videoAuthorId) ?>" data-subscription-feature="watch" role="button"><?php else: ?><button href="https://accounts.google.com/ServiceLogin?passive=true&amp;continue=http%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26feature%3Dsubscribe%26hl%3Den_US%26next%3D%252Fwatch%253Fv%253D<?php echo $video_id ?>%26nomobiletemp%3D1&amp;uilel=3&amp;hl=en_US&amp;service=youtube" onclick=";window.location.href=this.getAttribute(&#39;href&#39;);return false;" type="button" class="yt-subscription-button yt-subscription-button-js-default end  yt-uix-button yt-uix-button-subscription" data-enable-hovercard="true" data-subscription-value="<?php echo htmlspecialchars($videoAuthorId ?? '') ?>" data-force-position="true" data-position="topright" data-subscription-feature="watch" data-subscription-type="" role="button"><?php endif; ?><?php if (empty($ytIsVideoOwner)): ?><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-subscribe" src="/yts/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-uix-button-valign"></span></span><span class="yt-uix-button-content">  <span class="subscribe-label">Subscribe</span>
   <span class="subscribed-label">Subscribed</span>
   <span class="unsubscribe-label">Unsubscribe</span>
- </span></button><span class="yt-subscription-button-disabled-mask"></span></span><div class="yt-uix-hovercard-content hid">  <p class="yt-spinner">
+ </span></button><span class="yt-subscription-button-disabled-mask"></span><?php endif; ?></span><div class="yt-uix-hovercard-content hid">  <p class="yt-spinner">
       <img src="/yts/img/pixel-vfl3z5WfW.gif" class="yt-spinner-img" alt="Loading icon">
 
 Loading...
@@ -245,18 +261,7 @@ Loading...
 
   </div>
   <!-- end watch-headline-container -->
-<?php if (!empty($ytIsVideoOwner)): ?>
-  <div id="watch-privacy-contain">
-      <div id="eow-privacy">
-        <div class="yt-alert yt-alert-default yt-alert-warn  " id="watch-video-notification-alert"><div class="yt-alert-buttons"></div><div class="yt-alert-content" role="alert">    <span class="yt-alert-vertical-trick"></span>
-    <div class="yt-alert-message">
-            This video is public.
-    </div>
-</div></div>
-      </div>
-    </div>
-<?php else: ?>
-  <div id="watch-video-container">
+<div id="watch-video-container">
     <div id="watch-video" >
           <script>
 if (window.yt.timing) {yt.timing.tick("bf");}    </script>
@@ -294,7 +299,19 @@ if (window.yt.timing) {yt.timing.tick("bf");}    </script>
 
 
 
-  <div id="watch-actions">
+  <?php if (!empty($ytIsVideoOwner)): ?>
+  <div id="watch-privacy-contain">
+      <div id="eow-privacy">
+        <div class="yt-alert yt-alert-default yt-alert-warn  " id="watch-video-notification-alert"><div class="yt-alert-buttons"></div><div class="yt-alert-content" role="alert">    <span class="yt-alert-vertical-trick"></span>
+    <div class="yt-alert-message">
+            This video is public.
+    </div>
+</div></div>
+      </div>
+    </div>
+<?php endif; ?>
+  
+<div id="watch-actions">
   <?php if (!$videoisLive): ?> 
           <div id="watch-actions-right">
     <span class="watch-view-count">
@@ -412,7 +429,12 @@ The interactive transcript could not be loaded.
     <div id="watch-description-clip">
       <p id="watch-uploader-info">
         <?php if(!$videoisLive): ?>
+<!-- ✅ ИСПРАВЛЕНО: Отображение Uploaded vs Premiered -->
+<?php if (!empty($isPremiered) && $isPremiered): ?>
+Premiered by <a href="<?php echo htmlspecialchars($videoAuthorUrl) ?>" class="yt-uix-sessionlink yt-user-name author" rel="author" data-sessionlink="ei=CJ6l17ndhLQCFeOCRAodBDLN_A%3D%3D" dir="ltr"><?php echo $videoAuthor ?></a> on <span id="eow-date" class="watch-video-date" ><?php echo $premieredDate ?></span>
+<?php else: ?>
 Uploaded by <a href="<?php echo htmlspecialchars($videoAuthorUrl) ?>" class="yt-uix-sessionlink yt-user-name author" rel="author" data-sessionlink="ei=CJ6l17ndhLQCFeOCRAodBDLN_A%3D%3D" dir="ltr"><?php echo $videoAuthor ?></a> on <span id="eow-date" class="watch-video-date" ><?php echo $videoDate ?></span>
+<?php endif; ?>
 <?php else: ?>
   Streamed live on <span id="eow-date" class="watch-video-date" ><?php echo $videoDate ?></span> by <a href="<?php echo htmlspecialchars($videoAuthorUrl) ?>" class="yt-uix-sessionlink yt-user-name author" rel="author" data-sessionlink="ei=CJ6l17ndhLQCFeOCRAodBDLN_A%3D%3D" dir="ltr"><?php echo $videoAuthor ?></a>
 <?php endif; ?>      </p>
@@ -502,7 +524,67 @@ Source videos:
 
   </div>
 
-  <div id="watch-discussion">
+  <?php if (!empty($ytIsVideoOwner)): ?>
+      <form action="/watch_inlineedit_ajax?action_save_video=1" method="POST" id="watch-video-info-form" class="hid">
+    <input type="hidden" name="session_token" value="<?php echo htmlspecialchars(yt_session_token()); ?>">
+    <input name="video_id" value="<?php echo htmlspecialchars($video_id); ?>" type="hidden">
+    <input name="ignore_broadcast_settings" value="0" type="hidden">
+
+    <p class="yt">
+      <label class="yt-uix-form-label">
+Description:
+        <span class="yt-uix-form-input-container "><textarea class="yt-uix-form-textarea " name="field_myvideo_descr" rows="6"><?php echo htmlspecialchars($videoDescription ?? ''); ?></textarea></span>
+      </label>
+    </p>
+    <p class="yt">
+      <label class="yt-uix-form-label">
+Category:<br>
+        <span class="yt-uix-form-input-select "><span class="yt-uix-form-input-select-content"><img src="/yts/img/pixel-vfl3z5WfW.gif" class="yt-uix-form-input-select-arrow"><span class="yt-uix-form-input-select-value"><?php echo htmlspecialchars($videoCategory ?? 'People & Blogs'); ?></span></span><select class="yt-uix-form-input-select-element " name="field_myvideo_categories">
+    <option value="2"<?php echo (($videoCategoryId ?? '')==='2')?' selected':''; ?>>Autos &amp; Vehicles</option>
+    <option value="23"<?php echo (($videoCategoryId ?? '')==='23')?' selected':''; ?>>Comedy</option>
+    <option value="27"<?php echo (($videoCategoryId ?? '')==='27')?' selected':''; ?>>Education</option>
+    <option value="24"<?php echo (($videoCategoryId ?? '')==='24')?' selected':''; ?>>Entertainment</option>
+    <option value="1"<?php echo (($videoCategoryId ?? '')==='1')?' selected':''; ?>>Film &amp; Animation</option>
+    <option value="20"<?php echo (($videoCategoryId ?? '')==='20')?' selected':''; ?>>Gaming</option>
+    <option value="26"<?php echo (($videoCategoryId ?? '')==='26')?' selected':''; ?>>Howto &amp; Style</option>
+    <option value="10"<?php echo (($videoCategoryId ?? '')==='10')?' selected':''; ?>>Music</option>
+    <option value="25"<?php echo (($videoCategoryId ?? '')==='25')?' selected':''; ?>>News &amp; Politics</option>
+    <option value="29"<?php echo (($videoCategoryId ?? '')==='29')?' selected':''; ?>>Nonprofits &amp; Activism</option>
+    <option value="22"<?php echo (($videoCategoryId ?? '')==='22' || ($videoCategoryId ?? '')==='')?' selected':''; ?>>People &amp; Blogs</option>
+    <option value="15"<?php echo (($videoCategoryId ?? '')==='15')?' selected':''; ?>>Pets &amp; Animals</option>
+    <option value="28"<?php echo (($videoCategoryId ?? '')==='28')?' selected':''; ?>>Science &amp; Technology</option>
+    <option value="17"<?php echo (($videoCategoryId ?? '')==='17')?' selected':''; ?>>Sports</option>
+    <option value="19"<?php echo (($videoCategoryId ?? '')==='19')?' selected':''; ?>>Travel &amp; Events</option>
+</select></span>
+      </label>
+    </p>
+      <p class="yt">
+        <label class="yt-uix-form-label">
+License:<br>
+          <span class="yt-uix-form-input-select "><span class="yt-uix-form-input-select-content"><img src="/yts/img/pixel-vfl3z5WfW.gif" class="yt-uix-form-input-select-arrow"><span class="yt-uix-form-input-select-value">Standard YouTube License</span></span><select class="yt-uix-form-input-select-element " name="reuse">
+  <option value="all_rights_reserved" selected>Standard YouTube License</option>
+  <option value="creative_commons">Creative Commons Attribution license (reuse allowed)</option>
+</select></span>
+        </label>
+      </p>
+    <p class="yt">
+      <label class="yt-uix-form-label">
+Privacy:<br>
+        <span class="yt-uix-form-input-select "><span class="yt-uix-form-input-select-content"><img src="/yts/img/pixel-vfl3z5WfW.gif" class="yt-uix-form-input-select-arrow"><span class="yt-uix-form-input-select-value">Public</span></span><select class="yt-uix-form-input-select-element " name="privacy">
+  <option value="public" selected>Public</option>
+  <option value="private">Private</option>
+  <option value="unlisted">Unlisted</option>
+</select></span>
+      </label>
+    </p>
+   <p class="yt">
+      <button type="submit" class=" yt-uix-button yt-uix-button-primary" onclick=";return true;" role="button"><span class="yt-uix-button-content">Save </span></button>
+      <button type="button" id="watch-video-info-reset" onclick=";return false;" class=" yt-uix-button yt-uix-button-default" role="button"><span class="yt-uix-button-content">Cancel </span></button>
+    </p>
+  </form>
+<?php endif; ?>
+
+<div id="watch-discussion">
   <?php if (!$comments_enabled): ?>
           <div id="comments-view" class="comments-disabled">
     <div class="comments-section">
@@ -740,7 +822,17 @@ in reply to <a href="<?php echo htmlspecialchars($comment['replyToUrl'] ?? '') ?
               <a href="/watch?v=<?php echo htmlspecialchars($rel['id']) ?>" class="related-video yt-uix-contextlink yt-uix-sessionlink" data-sessionlink="feature=related"><span class="ux-thumb-wrap contains-addto "><span class="video-thumb ux-thumb yt-thumb-default-120 "><span class="yt-thumb-clip"><span class="yt-thumb-clip-inner"><img src="/yts/img/pixel-vfl3z5WfW.gif" alt="<?php echo htmlspecialchars($rel['title']) ?>" data-thumb="<?php echo htmlspecialchars($rel['thumbnail']) ?>" width="120" ><span class="vertical-align"></span></span></span></span><span class="video-time"><?php echo htmlspecialchars($rel['duration']) ?></span>
   <button onclick=";return false;" title="Watch Later" type="button" class="addto-button video-actions spf-nolink addto-watch-later-button-sign-in yt-uix-button yt-uix-button-default yt-uix-button-short yt-uix-tooltip" data-button-menu-id="shared-addto-watch-later-login" data-video-ids="<?php echo htmlspecialchars($rel['id']) ?>" role="button"><span class="yt-uix-button-content">  <img src="/yts/img/pixel-vfl3z5WfW.gif" alt="Watch Later">
  </span><img class="yt-uix-button-arrow" src="/yts/img/pixel-vfl3z5WfW.gif" alt=""></button>
-</span><span dir="ltr" class="title" title="<?php echo htmlspecialchars($rel['title']) ?>"><?php echo htmlspecialchars($rel['title']) ?></span><span class="stat attribution">by <span class="yt-user-name " dir="ltr"><?php echo htmlspecialchars($rel['author']) ?></span></span><span class="stat view-count"><?php echo htmlspecialchars($rel['views']) ?> views</span>
+</span><span dir="ltr" class="title" title="<?php echo htmlspecialchars($rel['title']) ?>"><?php echo htmlspecialchars($rel['title']) ?></span><span class="stat attribution">by <span class="yt-user-name " dir="ltr"><?php echo htmlspecialchars($rel['author']) ?></span></span><span class="stat view-count"><?php
+    // $rel['views'] = чистое число. format_view_count → «1,234,567 views»
+    if (function_exists('format_view_count')) {
+        echo htmlspecialchars(format_view_count($rel['views'] ?? ''));
+    } else {
+        $n = (int)preg_replace('/\D/', '', (string)($rel['views'] ?? ''));
+        if ($n <= 0)      echo 'No views';
+        elseif ($n === 1) echo '1 view';
+        else              echo number_format($n, 0, '.', ',') . ' views';
+    }
+?></span>
               </a>
             </li>
 <?php endforeach; ?>
@@ -1271,6 +1363,116 @@ if (window.yt.timing) {yt.timing.tick("js_foot");}    </script>
     
   </div>
 
+
+
+
+
+<?php if (!empty($ytIsVideoOwner)): ?>
+        <link rel="stylesheet" href="/yts/cssbin/www-watch-inlineedit-vflwS811J.css">
+    <script src="/yts/jsbin/www-watch-edit-vflGVJE5d.js"></script>
+  <script>
+    yt.setConfig({
+      'IS_OWNER_VIEWING': true
+    });
+
+    /* Exactly as in 2012 watch page: new yt.www.watch.Edit() on init */
+    function ytWatchEditInit() {
+      if (yt.www && yt.www.watch && typeof yt.www.watch.Edit === 'function') {
+        new yt.www.watch.Edit();
+        return;
+      }
+      /* Fallback polyfill matching www-watch-edit-vflGVJE5d.js behavior */
+      function $(id) { return document.getElementById(id); }
+      function showEl(el) {
+        if (!el) return;
+        el.style.display = '';
+        el.className = (el.className || '').replace(/\bhid\b/g, '').replace(/\s+/g, ' ').trim();
+      }
+      function hideEl(el) {
+        if (!el) return;
+        el.style.display = 'none';
+        if (!/\bhid\b/.test(el.className || '')) el.className = ((el.className || '') + ' hid').trim();
+      }
+      function q(cls, root) {
+        root = root || document;
+        return root.querySelector ? root.querySelector('.' + cls) : null;
+      }
+
+      var titleH1 = $('watch-headline-title');
+      var titleForm = $('watch-headline-title-form');
+      var titleReset = $('watch-headline-title-reset');
+      var descBox = $('watch-description');
+      var descClip = $('watch-description-clip');
+      var metaForm = $('watch-video-info-form');
+      var metaReset = $('watch-video-info-reset');
+      var privacyIcon = $('watch-privacy-icon');
+
+      if (titleH1 && titleForm) {
+        titleH1.style.cursor = 'pointer';
+        titleH1.onclick = function() {
+          hideEl(titleH1);
+          showEl(titleForm);
+          var inp = q('yt-uix-form-input-text', titleForm);
+          if (inp) { try { inp.focus(); inp.select(); } catch (e) {} }
+        };
+      }
+      if (titleReset && titleForm && titleH1) {
+        titleReset.onclick = function() {
+          hideEl(titleForm);
+          showEl(titleH1);
+          return false;
+        };
+      }
+      function openMeta() {
+        if (!metaForm) return;
+        hideEl(descBox);
+        showEl(metaForm);
+        try { metaForm.scrollIntoView(); } catch (e) {}
+        var ta = q('yt-uix-form-textarea', metaForm);
+        if (ta) { try { ta.focus(); ta.select(); } catch (e) {} }
+      }
+      if (descClip) {
+        descClip.style.cursor = 'pointer';
+        descClip.onclick = function(e) {
+          /* don't open when clicking expand/collapse buttons */
+          var t = e.target || e.srcElement;
+          if (t && (t.closest && (t.closest('#watch-description-toggle') || t.closest('button')))) return;
+          openMeta();
+        };
+      }
+      if (privacyIcon) {
+        privacyIcon.onclick = function(e) {
+          if (e && e.stopPropagation) e.stopPropagation();
+          openMeta();
+        };
+      }
+      if (metaReset && metaForm && descBox) {
+        metaReset.onclick = function() {
+          showEl(descBox);
+          hideEl(metaForm);
+          return false;
+        };
+      }
+      if (titleForm) {
+        titleForm.onsubmit = function() {
+          /* let browser POST to /watch_inlineedit_ajax — no preventDefault in polyfill */
+          return true;
+        };
+      }
+    }
+
+    if (yt.pubsub && yt.pubsub.subscribe) {
+      yt.pubsub.subscribe('init', ytWatchEditInit);
+    } else {
+      /* if pubsub already fired or missing */
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ytWatchEditInit);
+      } else {
+        ytWatchEditInit();
+      }
+    }
+  </script>
 <?php endif; ?>
+
 </body>
 </html>

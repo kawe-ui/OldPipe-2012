@@ -11,6 +11,8 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . '/api/servermain.php');
 
 // ─── Defaults ─────────────────────────────────────────────────────────────────
+// $Subscribed / $isOwner здесь НЕ выставляем — это user-specific данные.
+// Их считает только channel.php на основе текущей сессии/куки.
 $channelExists       = false;
 $channelError        = '';   // '' | 'not_found' | 'terminated' | 'unavailable'
 $channelErrorText    = '';   // точный текст алерта YouTube
@@ -30,6 +32,8 @@ $channelLinks        = [];   // [['title','text','url','domain'], …]
 $channelVideos       = [];   // сетка видео вкладки Videos
 $channelPlaylists    = [];   // [['id','title','thumbnail','count'], …]
 $channelFeatured     = null; // первое видео — для «featured»
+// Статус подписки текущего пользователя — НЕ кэшируется (user-specific)
+$channelIsSubscribed = false;
 
 // ─── Определяем идентификатор ─────────────────────────────────────────────────
 if (empty($channel_id)) {
@@ -175,6 +179,42 @@ function _ch_unwrap_link(string $url): string {
     return $url;
 }
 
+// ─── Статус подписки текущего пользователя из ответа browse ───────────────────
+// Берём из SubscribeButtonView / subscribeButtonRenderer.
+// Работает только если innertube_post ушёл с куками/сессией пользователя.
+// В общий кэш это поле НЕ пишем (user-specific).
+function _ch_extract_subscribed(array $raw): bool {
+    // Современный UI: pageHeaderViewModel → actions → SubscribeButtonView
+    $sb = _sm_find_renderer($raw, 'subscribeButtonViewModel');
+    if (is_array($sb)) {
+        // subscribeButtonContent.subscribeState.subscribed
+        if (isset($sb['subscribeButtonContent']['subscribeState']['subscribed'])) {
+            return (bool)$sb['subscribeButtonContent']['subscribeState']['subscribed'];
+        }
+        // иногда лежит прямо в корне view model
+        if (isset($sb['subscribeState']['subscribed'])) {
+            return (bool)$sb['subscribeState']['subscribed'];
+        }
+    }
+
+    // Старый UI: subscribeButtonRenderer
+    $old = _sm_find_renderer($raw, 'subscribeButtonRenderer');
+    if (is_array($old) && array_key_exists('subscribed', $old)) {
+        return (bool)$old['subscribed'];
+    }
+
+    // Ещё один вариант — c4TabbedHeaderRenderer
+    $hdr = _sm_find_renderer($raw, 'c4TabbedHeaderRenderer');
+    if (is_array($hdr)) {
+        $btn = $hdr['subscribeButton']['subscribeButtonRenderer'] ?? null;
+        if (is_array($btn) && array_key_exists('subscribed', $btn)) {
+            return (bool)$btn['subscribed'];
+        }
+    }
+
+    return false;
+}
+
 // ─── Вкладка Playlists ────────────────────────────────────────────────────────
 // Возвращает [['id','title','thumbnail','count'], …]. Канал без плейлистов —
 // нормальная ситуация: модуль на странице просто не рисуется.
@@ -286,24 +326,26 @@ function ch_fetch(string $rawId): array {
     }
 
     $out = [
-        'exists'      => true,
-        'error'       => '',
-        'errorText'   => '',
-        'id'          => $id,
-        'title'       => $meta['title'],
-        'description' => $meta['description'] ?? '',
-        'keywords'    => $meta['keywords'] ?? '',
-        'vanityUrl'   => $meta['vanityChannelUrl'] ?? '',
-        'avatar'      => default_avatar(best_thumb($meta['avatar']['thumbnails'] ?? [])),
-        'banner'      => '',
-        'subscribers' => '',
-        'videoCount'  => '',
-        'totalViews'  => '',
-        'joined'      => '',
-        'country'     => '',
-        'links'       => [],
-        'videos'      => [],
-        'playlists'   => [],
+        'exists'        => true,
+        'error'         => '',
+        'errorText'     => '',
+        'id'            => $id,
+        'title'         => $meta['title'],
+        'description'   => $meta['description'] ?? '',
+        'keywords'      => $meta['keywords'] ?? '',
+        'vanityUrl'     => $meta['vanityChannelUrl'] ?? '',
+        'avatar'        => default_avatar(best_thumb($meta['avatar']['thumbnails'] ?? [])),
+        'banner'        => '',
+        'subscribers'   => '',
+        'videoCount'    => '',
+        'totalViews'    => '',
+        'joined'        => '',
+        'country'       => '',
+        'links'         => [],
+        'videos'        => [],
+        'playlists'     => [],
+        // user-specific — в кэш НЕ попадёт (см. ch_fetch_cached)
+        'is_subscribed' => _ch_extract_subscribed($raw),
     ];
 
     // Баннер: pageHeaderViewModel.banner.imageBannerViewModel.image.sources[]
@@ -389,11 +431,19 @@ function ch_fetch_cached(string $rawId): array {
 
     if (is_file($key) && (time() - filemtime($key)) < CACHE_TTL_CHANNEL) {
         $c = json_decode((string)file_get_contents($key), true);
-        if (is_array($c) && isset($c['exists'])) return $c;
+        if (is_array($c) && isset($c['exists'])) {
+            // из кэша is_subscribed не берём — он user-specific
+            unset($c['is_subscribed']);
+            return $c;
+        }
     }
 
     $data = ch_fetch($rawId);
-    @file_put_contents($key, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
+    // В файл кэша user-specific флаг не пишем
+    $toCache = $data;
+    unset($toCache['is_subscribed']);
+    @file_put_contents($key, json_encode($toCache, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
     // Ошибку кэшируем ненадолго: канал могут разбанить или создать заново.
     // Сдвигаем mtime в прошлое, чтобы запись протухла через CACHE_TTL_METADATA.
@@ -433,6 +483,10 @@ if ($channel_id === '') {
         $channelVideos       = $d['videos'];
         $channelPlaylists    = $d['playlists'] ?? [];
         $channelFeatured     = $channelVideos[0] ?? null;
+        // Только если данные свежие (не из кэша) — берём статус из InnerTube
+        if (array_key_exists('is_subscribed', $d)) {
+            $channelIsSubscribed = (bool)$d['is_subscribed'];
+        }
     }
 }
 

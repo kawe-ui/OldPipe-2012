@@ -2,7 +2,25 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . '/includes/config.inc.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/includes/auth.inc.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/includes/ytactions.inc.php');
-$ytAccount = yt_account_info();
+if (is_file($_SERVER['DOCUMENT_ROOT'] . '/includes/cookie_auth.inc.php')) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/cookie_auth.inc.php';
+}
+
+if (is_file($_SERVER['DOCUMENT_ROOT'] . '/includes/local_login.inc.php')) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/local_login.inc.php';
+    if (function_exists('yt_local_boot_session')) yt_local_boot_session();
+}
+// Локальный логин имеет приоритет, если сессия/cookie есть
+$ytAccount = null;
+if (function_exists('yt_cookie_account')) {
+    $ytAccount = yt_cookie_account();
+}
+if ($ytAccount === null && function_exists('yt_local_account')) {
+    $ytAccount = yt_local_account();
+}
+if ($ytAccount === null && function_exists('yt_account_info')) {
+    $ytAccount = yt_account_info();
+}
 
 $ytLoggedIn    = $ytLoggedIn    ?? ($ytAccount !== null);
 $ytUserName    = $ytUserName    ?? ($ytAccount['name'] ?? '');
@@ -10,15 +28,16 @@ $ytUserEmail   = $ytUserEmail   ?? ($ytAccount['email'] ?? '');
 $ytUserChannel = $ytUserChannel ?? (!empty($ytAccount['channelId']) ? '/channel/' . $ytAccount['channelId'] : '/');
 $ytUserChannelId = $ytUserChannelId ?? ($ytAccount['channelId'] ?? '');
 $ytUserAvatar  = $ytUserAvatar  ?? ($ytAccount['avatar'] ?? '');
-$ytUserAvatar  = default_avatar($ytUserAvatar);
+$ytUserAvatar  = function_exists('default_avatar') ? default_avatar($ytUserAvatar) : ($ytUserAvatar !== '' ? $ytUserAvatar : '/dynamic/pfp/default.png');
 
-$ytSignInUrl   = $ytSignInUrl ?? yt_signin_url((string)($_SERVER['REQUEST_URI'] ?? '/'));
+$__returnPath = (string)($_SERVER['REQUEST_URI'] ?? '/');
+$ytSignInUrl   = $ytSignInUrl ?? ('/ServiceLogin?continue=' . rawurlencode($__returnPath));
 $ytOtherAccounts = [];
 foreach (($ytAccount['accounts'] ?? []) as $acc) {
     if (!empty($acc['selected']) || empty($acc['switchUrl'])) continue;
     $ytOtherAccounts[] = $acc;
 }
-$ytCsrfToken   = yt_session_token();
+$ytCsrfToken   = function_exists('yt_session_token') ? (string)yt_session_token() : '';
 $ytCsrfTokenJs = json_encode($ytCsrfToken, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
 ?>
@@ -109,8 +128,9 @@ $ytCsrfTokenJs = json_encode($ytCsrfToken, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HE
 }());
 </script>
 <?php if ($ytLoggedIn): ?>
-<form id="logoutForm" method="post" action="/auth/google/logout" style="display:none">
+<form id="logoutForm" method="post" action="/logout" style="display:none">
   <input type="hidden" name="session_token" value="<?php echo htmlspecialchars($ytCsrfToken, ENT_QUOTES, 'UTF-8') ?>">
+  <input type="hidden" name="logout" value="1">
 </form>
 <?php endif; ?>
 <?php if ($ytLoggedIn): ?>
@@ -194,7 +214,7 @@ Settings
               </a>
             </li>
           <li class="masthead-expanded-menu-item">
-            <a class="end" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
+            <a class="end" href="/logout.php" onclick="document.getElementById('logoutForm').submit(); return false;">
 Sign out
             </a>
           </li>

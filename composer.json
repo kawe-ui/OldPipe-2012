@@ -8,6 +8,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "guzzlehttp/guzzle": "^7.10"
+    "guzzlehttp/guzzle": "^7.10",
+    "bluelibraries/dns": "^1.1"
   }
 }

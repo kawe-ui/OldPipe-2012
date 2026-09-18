@@ -2,23 +2,21 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 //  get_video.php — отдача видеопотока флеш-плееру 2012
 //  /get_video?video_id=XXXXXXXXXXX&itag=22
-//
-//  YouTube сейчас отдаёт muxed только 360p (itag 18). Всё выше — раздельные
-//  video-only + audio-only потоки, поэтому склеиваем их ffmpeg'ом РЕМУКСОМ
-//  (-c copy, без перекодирования), раскладывая по itag'ам словаря 2012:
-//    5  → 240p FLV   — живой стрим (Flash нативно тянет FLV прогрессивно)
-//    18 → 360p MP4   — прямое проксирование (Range, без ffmpeg)
-//    35 → 480p FLV   — живой стрим
-//    22 → 720p MP4   — кэш с faststart + Range (moov должен быть в начале)
-//    37 → 1080p MP4  — кэш с faststart + Range
-//  60fps приходит сам собой: для 720p/1080p выбирается itag 298/299, если есть.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 require_once($_SERVER['DOCUMENT_ROOT'] . '/api/servermain.php');
 
 ignore_user_abort(true);
 set_time_limit(0);
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, HEAD, OPTIONS');
+header('Cache-Control: max-age=31536000');
+header('X-Content-Type-Options: nosniff');
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 $video_id = $_GET['video_id'] ?? ($_GET['v'] ?? '');
 $itag     = (int)($_GET['itag'] ?? ($_GET['fmt'] ?? 0));
 
@@ -27,19 +25,18 @@ if (!preg_match('/^[A-Za-z0-9_-]{11}$/', $video_id)) {
     exit('bad video_id');
 }
 
-// ─── Выбор качества ───────────────────────────────────────────────────────────
 function _gv_pick(?array $streams, int $itag): ?array {
     $map = yt_quality_map($streams);
     if (empty($map)) return null;
     if ($itag && isset($map[$itag])) return $map[$itag];
-    // без itag — лучшее доступное
     return reset($map) ?: null;
 }
 
 $streams = innertube_get_streams($video_id);
 $q       = _gv_pick($streams, $itag);
 if ($q === null) {
-    $streams = innertube_get_streams($video_id, false);   // кэш мог протухнуть
+    // повтор без «ложного» второго аргумента (сигнатура — 1 параметр)
+    $streams = innertube_get_streams($video_id);
     $q       = _gv_pick($streams, $itag);
 }
 if ($q === null) {
@@ -49,9 +46,6 @@ if ($q === null) {
 
 $ua = $streams['ua'] ?? 'Mozilla/5.0';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  1. Нативный muxed (360p) — прямое проксирование с поддержкой Range
-// ═══════════════════════════════════════════════════════════════════════════════
 function _gv_proxy(array $fmt, string $ua): int {
     $range        = $_SERVER['HTTP_RANGE'] ?? '';
     $headersSent  = false;
@@ -104,12 +98,20 @@ function _gv_proxy(array $fmt, string $ua): int {
 
 while (ob_get_level() > 0) ob_end_clean();
 
+// ─── 1. Нативный muxed (обычно itag 18) ───────────────────────────────────────
 if (!empty($q['native'])) {
-    $fmt  = $streams['formats'][18];
+    $fmt = $streams['formats'][$q['itag']] ?? ($streams['formats'][18] ?? null);
+    if ($fmt === null || empty($fmt['url'])) {
+        http_response_code(404);
+        exit('no native muxed url');
+    }
     $code = _gv_proxy($fmt, $ua);
-    if ($code === 403) {   // URL истёк → обновляем и пробуем один раз
-        $streams = innertube_get_streams($video_id, false);
-        if (!empty($streams['formats'][18])) $code = _gv_proxy($streams['formats'][18], $ua);
+    if ($code === 403) {
+        $streams = innertube_get_streams($video_id);
+        $fmt = $streams['formats'][$q['itag']] ?? ($streams['formats'][18] ?? null);
+        if ($fmt !== null && !empty($fmt['url'])) {
+            $code = _gv_proxy($fmt, $ua);
+        }
     }
     if ($code >= 400 && !headers_sent()) {
         http_response_code(502);
@@ -118,9 +120,7 @@ if (!empty($q['native'])) {
     exit;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  2. Склейка ffmpeg'ом
-// ═══════════════════════════════════════════════════════════════════════════════
+// ─── 2. Склейка ffmpeg ────────────────────────────────────────────────────────
 if (FFMPEG_BIN === '') {
     http_response_code(501);
     exit('ffmpeg not available - only 360p can be served');
@@ -133,12 +133,6 @@ if ($vUrl === '' || $aUrl === '') {
     exit('no adaptive streams');
 }
 
-// ─── Чанковая загрузка потока ─────────────────────────────────────────────────
-// googlevideo ТРЕБУЕТ ограниченный Range: обычный GET и «bytes=0-» дают 403,
-// а куски больше ~1 МБ тоже отклоняются. Поэтому качаем ровно так, как это
-// делает родной плеер YouTube — последовательными кусками по 1 МБ.
-// (Именно из-за этого нельзя отдать googlevideo-URL прямо в ffmpeg: он шлёт
-//  открытый «Range: bytes=0-» и получает 403.)
 define('GV_CHUNK', 1048576);
 
 function _gv_download_chunked(string $url, string $ua, string $dest, int $clen): bool {
@@ -173,20 +167,16 @@ function _gv_download_chunked(string $url, string $ua, string $dest, int $clen):
                 $pos += strlen($body);
                 $ok   = true;
             } elseif ($try < 2) {
-                usleep(300000);   // короткая пауза перед повтором
+                usleep(300000);
             }
         }
         if (!$ok) { fclose($fp); @unlink($dest); return false; }
-        if ($clen === 0) break;   // длина неизвестна — берём один кусок
+        if ($clen === 0) break;
     }
     fclose($fp);
     return filesize($dest) > 0;
 }
 
-// ─── Ограничение размера кэша склеек ──────────────────────────────────────────
-// Склейка 1080p60 весит ~270 МБ, так что без чистки кэш съедает диск за десяток
-// роликов. Держим суммарный объём в пределах FFMPEG_CACHE_MAX_MB, удаляя самые
-// давно не запрашивавшиеся файлы (mtime обновляется при каждой отдаче ниже).
 function _gv_prune_cache(): void {
     $files = glob(CACHE_DIR . '/mux_*.mp4') ?: [];
     if (empty($files)) return;
@@ -203,27 +193,22 @@ function _gv_prune_cache(): void {
     $limit = FFMPEG_CACHE_MAX_MB * 1024 * 1024;
     if ($total <= $limit) return;
 
-    usort($list, fn($a, $b) => $a['t'] <=> $b['t']);   // давние — первыми на вылет
+    usort($list, fn($a, $b) => $a['t'] <=> $b['t']);
     foreach ($list as $e) {
         if ($total <= $limit) break;
         if (@unlink($e['f'])) $total -= $e['sz'];
     }
 }
 
-// ─── Склейка в MP4 через кэш ──────────────────────────────────────────────────
-// Прогрессивный MP4 требует moov-атом в начале (faststart), а его нельзя
-// записать в pipe — поэтому ремуксим в файл (-c copy, без перекодирования)
-// и отдаём готовый файл с полной поддержкой перемотки.
 $cacheName = CACHE_DIR . '/mux_' . $video_id . '_' . $q['itag'] . '.mp4';
 $lockName  = $cacheName . '.lock';
 
 if (!is_file($cacheName)) {
-    // защита от параллельных склеек одного и того же видео
     $lock = @fopen($lockName, 'c');
     if ($lock === false) { http_response_code(500); exit('cache not writable'); }
     if (!flock($lock, LOCK_EX)) { fclose($lock); http_response_code(500); exit('lock failed'); }
 
-    if (!is_file($cacheName)) {   // повторная проверка уже под блокировкой
+    if (!is_file($cacheName)) {
         $vTmp = $cacheName . '.v';
         $aTmp = $cacheName . '.a';
         $tmp  = $cacheName . '.part';
@@ -241,9 +226,6 @@ if (!is_file($cacheName)) {
             exit('stream download failed');
         }
 
-        // ffmpeg читает уже ЛОКАЛЬНЫЕ файлы — сети тут нет, значит нет и 403.
-        // Аргументы передаём массивом (proc_open без shell): на Windows
-        // escapeshellarg() вырезает «%» и ломает percent-encoding.
         $args = [
             FFMPEG_BIN, '-loglevel', 'error', '-y',
             '-i', $vTmp, '-i', $aTmp,
@@ -276,10 +258,8 @@ if (!is_file($cacheName)) {
     @unlink($lockName);
 }
 
-// mtime = время последнего обращения: на нём строится вытеснение в _gv_prune_cache()
 @touch($cacheName);
 
-// Отдаём файл с поддержкой Range (перемотка в плеере)
 $size  = filesize($cacheName);
 $start = 0;
 $end   = $size - 1;

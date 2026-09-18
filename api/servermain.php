@@ -3,6 +3,10 @@
 //  servermain.php  —  InnerTube WEB client config + helpers  |  May 2026
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// idk
+require_once __DIR__ . '/../init.php';
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/Nameserver.php';
 // ─── Server vars ──────────────────────────────────────────────────────────────
 $PHP_Self            = $_SERVER['PHP_SELF'];
 $PHP_Self_PathInfo   = pathinfo($PHP_Self);
@@ -52,11 +56,12 @@ $__cfg = ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/includes/config.inc.php';
 if (!is_file($__cfg)) $__cfg = __DIR__ . '/../includes/config.inc.php';
 require_once($__cfg);
 
-const CACHE_TTL_STREAMS   = 3 * 3600;   // 3h — matches the comment in timedtext.php
-const CACHE_TTL_TIMEDTEXT = 6 * 3600;   // pick whatever makes sense for you
+const CACHE_TTL_STREAMS   = 3 * 3600;   // 3h
+const CACHE_TTL_TIMEDTEXT = 6 * 3600;   // 6h
 
 // ─── Прокси для внешних запросов ──────────────────────────────────────────────
-function _itube_proxy_opts(CurlHandle $ch): void {
+function _itube_proxy_opts(?CurlHandle $ch = null): void {
+    if ($ch === null) return;
     if (defined('PROXY_HOST') && PROXY_HOST !== '' && PROXY_PORT > 0) {
         curl_setopt($ch, CURLOPT_PROXY,     PROXY_HOST);
         curl_setopt($ch, CURLOPT_PROXYPORT, PROXY_PORT);
@@ -68,8 +73,6 @@ function _itube_proxy_opts(CurlHandle $ch): void {
 }
 
 // ─── SSL helper ───────────────────────────────────────────────────────────────
-// Логика переехала в config.inc.php (yt_curl_ssl_opts), чтобы список cacert
-// не расходился между InnerTube, аннотациями и pfp-эндпоинтом.
 function _itube_ssl_opts(CurlHandle $ch): void {
     yt_curl_ssl_opts($ch);
 }
@@ -125,7 +128,7 @@ function innertube_post(string $endpoint, array $payload, string $hl = 'en', str
     return is_array($decoded) ? $decoded : null;
 }
 
-// ─── InnerTube POST с произвольным клиентом (для /player-стримов) ─────────────
+// ─── InnerTube POST с произвольным клиентом ──────────────────────────────────
 function innertube_post_as(string $endpoint, array $payload, array $client, array $headers): ?array {
     $payload['context'] = ['client' => array_merge($client, ['hl' => 'en', 'gl' => 'US'])];
     $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -153,9 +156,6 @@ function innertube_post_as(string $endpoint, array $payload, array $client, arra
 }
 
 // ─── Источник №1: yt-dlp ──────────────────────────────────────────────────────
-// Отдаёт ту же структуру, что и нативный разбор ниже, но со ссылками, у которых
-// есть полный доступ к adaptive-потокам (см. комментарий к YTDLP_BIN в конфиге).
-// Только благодаря ему доступны 480p/720p/1080p и 60fps.
 function ytdlp_get_streams(string $videoId): ?array {
     if (YTDLP_BIN === '') return null;
 
@@ -169,8 +169,6 @@ function ytdlp_get_streams(string $videoId): ?array {
         $args[] = (PROXY_TYPE === CURLPROXY_SOCKS5 ? 'socks5://' : 'http://') . PROXY_HOST . ':' . PROXY_PORT;
     }
 
-    // proc_open массивом (без shell): в URL и путях бывают символы, которые
-    // escapeshellarg() на Windows портит.
     $proc = @proc_open($args, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
     if (!is_resource($proc)) return null;
 
@@ -193,9 +191,6 @@ function ytdlp_get_streams(string $videoId): ?array {
     $j = json_decode($out, true);
     if (!is_array($j)) return null;
 
-    // Живой эфир: growing HLS без фиксированного размера файла — прогрессивная
-    // отдача и ffmpeg-ремукс-в-файл (ниже) тут не подходят в принципе, get_video.php
-    // обрабатывает такие потоки отдельной веткой через hlsUrl (см. isLive).
     if (!empty($j['is_live']) && !empty($j['manifest_url'])) {
         return [
             'title'         => $j['title'] ?? '',
@@ -224,7 +219,6 @@ function ytdlp_get_streams(string $videoId): ?array {
         $len  = (int)($f['filesize'] ?? ($f['filesize_approx'] ?? 0));
         if (!empty($f['http_headers']['User-Agent'])) $ua = $f['http_headers']['User-Agent'];
 
-        // muxed itag 18 — единственный, что YouTube ещё отдаёт слитым
         if ($itag === 18 && $vc !== 'none' && $ac !== 'none') {
             $formats[18] = [
                 'itag'          => 18,
@@ -238,8 +232,6 @@ function ytdlp_get_streams(string $videoId): ?array {
             continue;
         }
 
-        // video-only H.264: Flash декодирует только avc1 (VP9/AV1 — мимо,
-        // потому 1440p/2160p принципиально недоступны)
         if ($ac === 'none' && str_starts_with($vc, 'avc1')) {
             $h = (int)($f['height'] ?? 0);
             if ($h <= 0) continue;
@@ -262,11 +254,6 @@ function ytdlp_get_streams(string $videoId): ?array {
             continue;
         }
 
-        // audio-only AAC.
-        // Только стерео: yt-dlp показывает и 5.1-дорожки (itag 256/258,
-        // audio_channels=6), а Flash уверенно тянет лишь стерео — на 5.1 звук
-        // может пропасть. Из стерео предпочитаем AAC-LC (mp4a.40.2) над
-        // HE-AAC (mp4a.40.5), затем берём больший битрейт.
         if ($vc === 'none' && str_starts_with($ac, 'mp4a')) {
             if ((int)($f['audio_channels'] ?? 2) > 2) continue;
             $br   = (int)(($f['tbr'] ?? 0) * 1000);
@@ -294,21 +281,11 @@ function ytdlp_get_streams(string $videoId): ?array {
         'formats'            => $formats,
         'videoOnly'          => $videoOnly,
         'audioOnly'          => $audioOnly,
-        // yt-dlp сам разбирается с аттестацией — его ссылки не обрезаются
         'adaptiveFullAccess' => $audioOnly !== null && !empty($videoOnly),
     ];
 }
 
 // ─── Прямые URL стримов ───────────────────────────────────────────────────────
-// Сначала yt-dlp (полный доступ → все качества), при неудаче — нативный разбор
-// InnerTube (ANDROID/IOS): он даёт рабочий muxed itag 18, т.е. 360p.
-// Возвращает ['title','author','lengthSeconds','keywords','ua','formats'=>[itag=>fmt]]
-// fmt: itag, url, mimeType, width, height, contentLength, qualityLabel
-//
-// Без файлового кэша: каждый вызов добывает ссылки заново (yt-dlp/InnerTube).
-// Лок остаётся: плеер шлёт range-запросы пачками, и без него на одно и то же
-// видео параллельно запускалось бы по yt-dlp'у на каждый запрос —
-// эксклюзивный лок на videoId сериализует их в один физический полёт.
 function innertube_get_streams(string $videoId): ?array {
     $lockFile = sys_get_temp_dir() . '/itube_streams_' . preg_replace('/[^A-Za-z0-9_-]/', '', $videoId) . '.lock';
     $lock = @fopen($lockFile, 'c');
@@ -322,7 +299,6 @@ function innertube_get_streams(string $videoId): ?array {
     return $out;
 }
 
-// Собственно добыча ссылок (yt-dlp → ANDROID/IOS) — только из-под лока выше
 function _igs_fetch(string $videoId): ?array {
     $viaYtdlp = ytdlp_get_streams($videoId);
     if ($viaYtdlp !== null && !empty($viaYtdlp['formats'])) {
@@ -354,8 +330,6 @@ function _igs_fetch(string $videoId): ?array {
 
         $vd      = $d['videoDetails'] ?? [];
 
-        // Живой эфир: growing HLS без фиксированного размера файла — та же
-        // ветка, что и в ytdlp_get_streams(), см. комментарий там.
         if (!empty($vd['isLive']) && !empty($d['streamingData']['hlsManifestUrl'])) {
             return [
                 'title'         => $vd['title'] ?? '',
@@ -374,9 +348,6 @@ function _igs_fetch(string $videoId): ?array {
 
         $formats = [];
 
-        // muxed (video+audio) с прямым URL — YouTube всё чаще не отдаёт его
-        // вовсе (даже для рабочих видео), поэтому дальше не бросаем попытку
-        // из-за пустого $formats — adaptive ниже сам по себе достаточен.
         foreach ($d['streamingData']['formats'] ?? [] as $f) {
             if (empty($f['url']) || empty($f['itag'])) continue;
             $formats[(int)$f['itag']] = [
@@ -390,12 +361,8 @@ function _igs_fetch(string $videoId): ?array {
             ];
         }
 
-        // ── Adaptive: video-only H.264 (avc1) + audio-only AAC (mp4a) ──────────
-        // Всё выше 360p YouTube отдаёт только раздельно. Flash умеет лишь
-        // H.264/AAC, поэтому VP9/AV1 (2K/4K) игнорируем — их пришлось бы
-        // транскодировать, что не реально-временная задача.
-        $videoOnly = [];   // height => лучший avc1-поток (60fps в приоритете)
-        $audioOnly = null; // лучший mp4a
+        $videoOnly = [];
+        $audioOnly = null;
         foreach ($d['streamingData']['adaptiveFormats'] ?? [] as $f) {
             if (empty($f['url']) || empty($f['mimeType'])) continue;
             $mime = $f['mimeType'];
@@ -414,7 +381,6 @@ function _igs_fetch(string $videoId): ?array {
                     'contentLength' => (int)($f['contentLength'] ?? 0),
                     'bitrate'       => (int)($f['bitrate'] ?? 0),
                 ];
-                // при равной высоте предпочитаем больший fps, затем битрейт
                 $cur = $videoOnly[$h] ?? null;
                 if ($cur === null
                     || $cand['fps'] > $cur['fps']
@@ -435,26 +401,16 @@ function _igs_fetch(string $videoId): ?array {
         }
         krsort($videoOnly);
 
-        // Ни muxed, ни adaptive не дали ничего пригодного — этот клиент бесполезен,
-        // пробуем следующего (раньше здесь бросали попытку уже на пустом $formats,
-        // хотя adaptive рядом мог быть рабочим — см. yt_quality_map()).
         if (empty($formats) && (empty($videoOnly) || $audioOnly === null)) continue;
 
-        // ── Проверка полного доступа к adaptive-потокам ────────────────────────
-        // Сюда попадаем только если yt-dlp недоступен. Сырой googlevideo без
-        // валидной аттестации обрывает adaptive-поток примерно на 7-9% файла
-        // (замер: 22 МБ из 246 МБ, лимит на СМЕЩЕНИЕ и он накопительный —
-        // обновление ссылки не помогает). Если поток обрезан — качества выше
-        // 360p не предлагаем, иначе плеер встанет посреди ролика.
-        // Muxed itag 18 под ограничение не попадает.
         $adaptiveFullAccess = false;
         $probe = reset($videoOnly);
         if ($probe !== false && !empty($probe['contentLength'])) {
             $clen = (int)$probe['contentLength'];
             if ($clen <= 4 * 1024 * 1024) {
-                $adaptiveFullAccess = true;      // поток и так короче лимита
+                $adaptiveFullAccess = true;
             } else {
-                $from = $clen - 65536;           // пробуем хвост файла
+                $from = $clen - 65536;
                 $ch = curl_init();
                 curl_setopt_array($ch, [
                     CURLOPT_URL            => $probe['url'],
@@ -489,17 +445,10 @@ function _igs_fetch(string $videoId): ?array {
     return null;
 }
 
-// ─── Карта качеств: классические itag 2012 → реальные потоки ──────────────────
-// Плеер 2012 берёт подпись качества из itag, поэтому раскладываем современные
-// потоки по «родному» словарю: 5=240p, 18=360p, 35=480p, 22=720p, 37=1080p.
-// itag 18 отдаётся как есть (уже muxed), остальные склеиваются ffmpeg'ом.
-// FLV (5/35) стримится на лету, MP4 (22/37) — через кэш с faststart.
+// ─── Карта качеств ────────────────────────────────────────────────────────────
 function yt_quality_map(?array $streams): array {
     if ($streams === null) return [];
 
-    // Живой эфир — единственная запись независимо от запрошенного itag:
-    // get_video.php гонит ffmpeg'ом HLS→FLV напрямую в ответ, без выбора
-    // качества и без Range (перемотка по live не имеет смысла).
     if (!empty($streams['isLive'])) {
         return [93 => [
             'itag'      => 93,
@@ -511,9 +460,6 @@ function yt_quality_map(?array $streams): array {
         ]];
     }
 
-    // height => [classicItag, quality-label плеера, контейнер, m       ime]
-    // Плеер берёт ПОДПИСЬ качества из itag, а декодер — из поля type в
-    // stream_map, поэтому все склеенные потоки отдаём как H.264/AAC в MP4.
     static $classic = [
         240  => [5,  'small',  'mp4', 'video/mp4; codecs="avc1.42001E, mp4a.40.2"'],
         360  => [18, 'medium', 'mp4', 'video/mp4; codecs="avc1.42001E, mp4a.40.2"'],
@@ -525,7 +471,6 @@ function yt_quality_map(?array $streams): array {
     $map   = [];
     $audio = $streams['audioOnly'] ?? null;
 
-    // 360p — нативный muxed itag 18 (без ffmpeg, с полной поддержкой Range)
     if (!empty($streams['formats'][18])) {
         $f = $streams['formats'][18];
         $map[18] = [
@@ -543,28 +488,20 @@ function yt_quality_map(?array $streams): array {
         ];
     }
 
-    // Остальные качества — из adaptive H.264 + AAC (нужен звук для склейки).
-    // Предлагаем их только если поток отдаётся целиком: иначе googlevideo
-    // оборвёт видео на ~4 МБ и плеер встанет посреди ролика.
     if ($audio !== null && !empty($streams['adaptiveFullAccess'])) {
-        // Высота нативного muxed: у старых роликов itag 18 бывает 240p, и тогда
-        // adaptive-240p дал бы в меню второе такое же качество.
         $nativeHeight = $map[18]['height'] ?? 0;
 
         foreach ($streams['videoOnly'] ?? [] as $h => $v) {
-            if (!isset($classic[$h])) continue;   // 1440p/2160p — только VP9/AV1, Flash не умеет
+            if (!isset($classic[$h])) continue;
             [$itag, $quality, $container, $mime] = $classic[$h];
-            if (isset($map[$itag])) continue;     // 360p уже занят нативным
-            // Ровно та же высота, что у muxed → это дубль (у старых роликов
-            // itag 18 бывает 240p и совпал бы с adaptive-240p → itag 5).
-            // Качества НИЖЕ нативного — законный выбор, их оставляем.
+            if (isset($map[$itag])) continue;
             if ($h === $nativeHeight) continue;
             $map[$itag] = [
                 'itag'       => $itag,
                 'height'     => $h,
                 'width'      => $v['width'] ?: (int)round($h * 16 / 9),
                 'fps'        => $v['fps'],
-                'label'      => $v['qualityLabel'],   // «1080p60» и т.п.
+                'label'      => $v['qualityLabel'],
                 'quality'    => $quality,
                 'container'  => $container,
                 'mime'       => $mime,
@@ -575,11 +512,11 @@ function yt_quality_map(?array $streams): array {
         }
     }
 
-    krsort($map);   // высокие качества первыми (как в fmt_list 2012)
+    krsort($map);
     return $map;
 }
 
-// ─── Простой GET (RYD и прочие внешние API) ───────────────────────────────────
+// ─── Простой GET ──────────────────────────────────────────────────────────────
 function apiGet(string $url): ?array {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL,            $url);
@@ -615,14 +552,12 @@ function iso8601ToSeconds(string $iso): int {
          + ((int)($m[3] ?? 0));
 }
 
-// Объединяет массив runs в строку
 function runs_to_text(array $runs): string {
     $out = '';
     foreach ($runs as $r) $out .= $r['text'] ?? '';
     return $out;
 }
 
-// Лучший thumbnail из массива thumbnails InnerTube
 function best_thumb(array $thumbs, int $minWidth = 0): string {
     if (empty($thumbs)) return '';
     usort($thumbs, fn($a, $b) => (int)($b['width'] ?? 0) - (int)($a['width'] ?? 0));
@@ -632,14 +567,49 @@ function best_thumb(array $thumbs, int $minWidth = 0): string {
     return $thumbs[0]['url'] ?? '';
 }
 
-// Парсит «1,234,567 views» → «1,234,567»
+if (!function_exists('default_avatar')) {
+    function default_avatar(?string $url): string {
+        $url = trim((string)$url);
+        if ($url === '') {
+            return '/dynamic/pfp/default.png';
+        }
+
+        if (strpos($url, '/dynamic/pfp/') === 0) {
+            return $url;
+        }
+        if (strpos($url, '/dynamic/pfp/pfp.php') !== false) {
+            return $url;
+        }
+
+        $lower = strtolower($url);
+        if (
+            strpos($lower, '/defaults/') !== false
+            || strpos($lower, 'default_avatar') !== false
+            || strpos($lower, 'silhouette') !== false
+            || preg_match('#yt3\.ggpht\.com/.*=s\d+-c-k-c0x00ffffff-no-rj#', $lower)
+        ) {
+            if (strpos($lower, '/defaults/') !== false || strpos($lower, 'default_avatar') !== false) {
+                return '/dynamic/pfp/default.png';
+            }
+        }
+
+        if (preg_match('#^https?://#i', $url)) {
+            return '/dynamic/pfp/pfp.php?u=' . rawurlencode($url);
+        }
+
+        if (strpos($url, '//') === 0) {
+            return '/dynamic/pfp/pfp.php?u=' . rawurlencode('https:' . $url);
+        }
+
+        return $url;
+    }
+}
+
 function parse_short_count(string $raw): string {
     if (preg_match('/([\d][\d\s,\.]*[\d]|\d)/', $raw, $m)) return trim($m[1]);
     return $raw;
 }
 
-// ─── Комментарии: единый парсер для watch (страница 1) и пагинации ────────────
-// Рекурсивный поиск рендерера по ключу (локальная копия для servermain)
 function _sm_find_renderer(array $data, string $key, int $depth = 0): ?array {
     if ($depth > 30) return null;
     foreach ($data as $k => $v) {
@@ -652,7 +622,6 @@ function _sm_find_renderer(array $data, string $key, int $depth = 0): ?array {
     return null;
 }
 
-// Ищет continuation-token секции комментариев в ответе /next
 function yt_comments_token(array $nextRaw): ?string {
     $find = function (array $data, int $depth = 0) use (&$find): ?string {
         if ($depth > 30) return null;
@@ -672,10 +641,7 @@ function yt_comments_token(array $nextRaw): ?string {
     return $find($nextRaw);
 }
 
-// Загружает страницу комментариев по токену.
-// Возвращает ['comments'=>[...], 'nextToken'=>?string, 'count'=>?string]
 function yt_fetch_comments(string $videoId, ?string $token = null): array {
-    // Токен первой страницы — из /next
     if ($token === null) {
         $next = innertube_post('next', ['videoId' => $videoId]);
         if ($next === null) return ['comments' => [], 'nextToken' => null, 'count' => null];
@@ -686,7 +652,6 @@ function yt_fetch_comments(string $videoId, ?string $token = null): array {
     $page = innertube_post('next', ['continuation' => $token]);
     if ($page === null) return ['comments' => [], 'nextToken' => null, 'count' => null];
 
-    // Число комментариев из заголовка
     $count = null;
     $chr = _sm_find_renderer($page, 'commentsHeaderRenderer');
     if ($chr !== null) {
@@ -695,7 +660,6 @@ function yt_fetch_comments(string $videoId, ?string $token = null): array {
         if (preg_match('/[\d][\d,\.\s]*/', $cText, $m)) $count = trim($m[0]);
     }
 
-    // Данные комментариев из mutations (формат 2024+)
     $payloadById = [];
     foreach ($page['frameworkUpdates']['entityBatchUpdate']['mutations'] ?? [] as $mut) {
         $pl = $mut['payload']['commentEntityPayload'] ?? null;
@@ -704,7 +668,6 @@ function yt_fetch_comments(string $videoId, ?string $token = null): array {
         if ($cid !== '') $payloadById[$cid] = $pl;
     }
 
-    // Порядок вывода — по commentViewModel
     $orderedIds = [];
     $walk = function (array $data, int $depth = 0) use (&$walk, &$orderedIds) {
         if ($depth > 30 || count($orderedIds) >= 40) return;
@@ -739,7 +702,6 @@ function yt_fetch_comments(string $videoId, ?string $token = null): array {
         ];
     }
 
-    // Токен следующей страницы (continuationItemRenderer в самом низу)
     $nextToken = null;
     $findNext = function (array $data, int $depth = 0) use (&$findNext, &$nextToken) {
         if ($nextToken !== null || $depth > 30) return;
@@ -758,10 +720,6 @@ function yt_fetch_comments(string $videoId, ?string $token = null): array {
     return ['comments' => $comments, 'nextToken' => $nextToken, 'count' => $count];
 }
 
-// ─── Лайки из ответа /next ────────────────────────────────────────────────────
-// InnerTube отдаёт счётчик в разных обёртках; проверяем известные формы и берём
-// первую с числом. Скрытый автором рейтинг → null.
-// «6.2K» и «1,234» → 6200 / 1234 (expand_count разворачивает суффиксы).
 function yt_likes_from_next(array $next): ?int {
     $lbvm = _sm_find_renderer($next, 'likeButtonViewModel');
     $label = '';
@@ -769,7 +727,6 @@ function yt_likes_from_next(array $next): ?int {
         $label = $lbvm['likeCountEntity']['expandedLikeCountIfIndifferent']['content']
             ?? ($lbvm['likeCountEntity']['likeCountIfLiked']['content'] ?? '');
     }
-    // Старый toggleButtonRenderer — как фолбэк
     if ($label === '') {
         $tb = _sm_find_renderer($next, 'toggleButtonRenderer');
         if ($tb !== null) {
@@ -778,15 +735,10 @@ function yt_likes_from_next(array $next): ?int {
         }
     }
     if ($label === '' || !preg_match('/\d/', $label)) return null;
-    $n = str_replace(',', '', expand_count($label));
-    return is_numeric($n) ? (int)$n : null;
+    $n = expand_count($label);
+    return ($n !== '' && ctype_digit($n)) ? (int)$n : null;
 }
 
-// ─── Лайки / дизлайки: RYD + кэш последних известных значений ─────────────────
-// Автор может скрыть рейтинг, а RYD — не ответить. Тогда берём последнее
-// известное значение из кэша, чтобы шкала sparkbars не осталась пустой.
-// $likesHint — лайки, которые уже дал InnerTube (используются, если RYD молчит).
-// Возвращает ['likes'=>?int, 'dislikes'=>?int, 'viewCount'=>?int]
 function yt_video_ratings(string $videoId, ?int $likesHint = null): array {
     $cacheFile = CACHE_DIR . '/rating_' . preg_replace('/[^A-Za-z0-9_-]/', '', $videoId) . '.json';
 
@@ -801,7 +753,10 @@ function yt_video_ratings(string $videoId, ?int $likesHint = null): array {
 
     if ($likes === null && $likesHint !== null) $likes = $likesHint;
 
-    // Фолбэк на кэш — только для того, чего не дала сеть
+    if ($likes === null && $dislikes === null) {
+        error_log("⚠️ RYD API: нет данных о лайках/дизлайках для видео $videoId - возможно видео новое или не в базе");
+    }
+
     if (($likes === null || $dislikes === null) && is_file($cacheFile)) {
         $c = json_decode((string)file_get_contents($cacheFile), true);
         if (is_array($c)) {
@@ -810,7 +765,6 @@ function yt_video_ratings(string $videoId, ?int $likesHint = null): array {
         }
     }
 
-    // Свежие значения из сети — обновляем кэш
     if ($ryd !== null && isset($ryd['likes'], $ryd['dislikes'])) {
         @file_put_contents($cacheFile, json_encode([
             'likes'    => (int)$ryd['likes'],
@@ -822,11 +776,6 @@ function yt_video_ratings(string $videoId, ?int $likesHint = null): array {
     return ['likes' => $likes, 'dislikes' => $dislikes, 'viewCount' => $views];
 }
 
-// ─── Метаданные видео: /player + /next + рейтинги ─────────────────────────────
-// Единый источник данных для get_video_metadata.php, api.php и get_video_info.php.
-// Всегда возвращает массив со 'status': 'OK' — данные заполнены; иначе 'reason'
-// содержит текст ошибки YouTube (удалено / приватное / заблокировано).
-// null — только при неверном id или полном отказе InnerTube.
 function yt_video_metadata(string $videoId, bool $useCache = true): ?array {
     if (!preg_match('/^[A-Za-z0-9_-]{11}$/', $videoId)) return null;
 
@@ -848,7 +797,6 @@ function yt_video_metadata(string $videoId, bool $useCache = true): ?array {
     $vd     = $player['videoDetails'] ?? [];
     $mf     = $player['microformat']['playerMicroformatRenderer'] ?? [];
 
-    // Видео недоступно и деталей нет — дальше идти незачем
     if (empty($vd['videoId']) && $status !== 'OK') {
         $reason = $ps['reason']
             ?? ($ps['errorScreen']['playerErrorMessageRenderer']['reason']['simpleText'] ?? '');
@@ -859,7 +807,6 @@ function yt_video_metadata(string $videoId, bool $useCache = true): ?array {
         ];
     }
 
-    // ── Владелец канала: аватар + подписчики (только /next их отдаёт) ──────────
     $authorAvatar   = '';
     $subscriberText = '';
     $likesHint      = null;
@@ -870,7 +817,6 @@ function yt_video_metadata(string $videoId, bool $useCache = true): ?array {
             $authorAvatar = best_thumb($vor['thumbnail']['thumbnails'] ?? []);
             $scStr = $vor['subscriberCountText']['simpleText']
                 ?? runs_to_text($vor['subscriberCountText']['runs'] ?? []);
-            // «6.3M subscribers» → «6.3M»: формат 2012 хранит счётчик без слова
             if (preg_match('/^([\d][\d.,]*\s*[KMB]?)/u', trim($scStr), $m)) {
                 $subscriberText = trim($m[1]);
             }
@@ -907,19 +853,138 @@ function yt_video_metadata(string $videoId, bool $useCache = true): ?array {
     return $out;
 }
 
-// Разворачивает сокращённые счётчики в полные числа с запятыми, как на
-// страницах 2012 года: «6.2K views» → «6,200», «1.3M» → «1,300,000»,
-// «1,234,567 views» → «1,234,567», «No views» → «0»
-function expand_count(string $raw): string {
-    $raw = trim($raw);
-    if ($raw === '' ) return '';
-    if (preg_match('/^([\d.,]+)\s*([KMB])/iu', $raw, $m)) {
-        $mult = ['K' => 1000, 'M' => 1000000, 'B' => 1000000000][strtoupper($m[2])];
-        return number_format((float)str_replace(',', '', $m[1]) * $mult, 0, '.', ',');
+if (!function_exists('expand_count')) {
+function expand_count($raw): string {
+    if ($raw === null) return '';
+
+    if (is_numeric($raw)) {
+        $count = (int)$raw;
+    } else {
+        $raw = trim(str_replace(["\xc2\xa0", "\u{00a0}"], ' ', (string)$raw));
+        if ($raw === '' || stripos($raw, 'no view') !== false) {
+            return '';
+        }
+        if (preg_match('/([\d.,]+)\s*([KMB])/iu', $raw, $m)) {
+            $mult = ['K' => 1000, 'M' => 1000000, 'B' => 1000000000][strtoupper($m[2])];
+            $count = (int)round((float)str_replace(',', '', $m[1]) * $mult);
+        } else {
+            $digits = preg_replace('/[^\d]/', '', $raw);
+            if ($digits === '' || $digits === null) return '';
+            $count = (int)$digits;
+        }
     }
-    if (preg_match('/([\d][\d,\.]*)/', $raw, $m)) {
-        return number_format((float)str_replace(',', '', $m[1]), 0, '.', ',');
+
+    if ($count <= 0) return '';
+    return (string)$count;
+}
+}
+
+if (!function_exists('format_view_count')) {
+function format_view_count($raw): string {
+    $n = expand_count($raw);
+    if ($n === '' || $n === '0') return 'No views';
+    $count = (int)$n;
+    if ($count === 1) return '1 view';
+    return number_format($count, 0, '.', ',') . ' views';
+}
+}
+
+if (!function_exists('yt_batch_exact_views')) {
+function yt_batch_exact_views(array $videoIds, int $limit = 20): array {
+    $ids = [];
+    foreach ($videoIds as $id) {
+        $id = (string)$id;
+        if (preg_match('/^[A-Za-z0-9_-]{11}$/', $id)) $ids[$id] = true;
+        if (count($ids) >= $limit) break;
     }
-    if (stripos($raw, 'no view') !== false) return '0';
-    return $raw;
+    $ids = array_keys($ids);
+    if ($ids === []) return [];
+
+    $out = [];
+    $need = [];
+    $ttl = defined('CACHE_TTL_METADATA') ? CACHE_TTL_METADATA : (6 * 3600);
+
+    foreach ($ids as $id) {
+        $vf = CACHE_DIR . '/vviews_' . $id . '.json';
+        if (is_file($vf) && (time() - filemtime($vf)) < $ttl) {
+            $c = json_decode((string)file_get_contents($vf), true);
+            if (is_array($c) && !empty($c['views'])) {
+                $out[$id] = (int)$c['views'];
+                continue;
+            }
+        }
+        $mf = CACHE_DIR . '/meta_' . $id . '.json';
+        if (is_file($mf) && (time() - filemtime($mf)) < $ttl) {
+            $c = json_decode((string)file_get_contents($mf), true);
+            if (is_array($c) && !empty($c['viewCount'])) {
+                $out[$id] = (int)$c['viewCount'];
+                @file_put_contents($vf, json_encode(['views' => $out[$id], 'ts' => time()]));
+                continue;
+            }
+        }
+        $need[] = $id;
+    }
+
+    if ($need === []) return $out;
+
+    $url = INNERTUBE_BASE_URL . 'player?key=' . INNERTUBE_API_KEY . '&prettyPrint=false';
+    $mh = curl_multi_init();
+    $handles = [];
+
+    foreach ($need as $id) {
+        $payload = json_encode([
+            'context' => innertube_context('en', 'US'),
+            'videoId' => $id,
+            'racyCheckOk' => true,
+            'contentCheckOk' => true,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 12,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($payload),
+                'Origin: '  . INNERTUBE_ORIGIN,
+                'Referer: ' . INNERTUBE_ORIGIN . '/',
+                'X-YouTube-Client-Name: 1',
+                'X-YouTube-Client-Version: ' . INNERTUBE_CLIENT_VER,
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+                'Accept: application/json',
+            ],
+        ]);
+        if (function_exists('_itube_ssl_opts')) _itube_ssl_opts($ch);
+        if (function_exists('_itube_proxy_opts')) _itube_proxy_opts($ch);
+        curl_multi_add_handle($mh, $ch);
+        $handles[] = [$ch, $id];
+    }
+
+    $running = null;
+    do {
+        $st = curl_multi_exec($mh, $running);
+        if ($running) curl_multi_select($mh, 1.0);
+    } while ($running && $st === CURLM_OK);
+
+    foreach ($handles as [$ch, $id]) {
+        $body = curl_multi_getcontent($ch);
+        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_multi_remove_handle($mh, $ch);
+        curl_close($ch);
+        if ($code !== 200 || !is_string($body) || $body === '') continue;
+        $j = json_decode($body, true);
+        if (!is_array($j)) continue;
+        $v = (int)($j['videoDetails']['viewCount'] ?? 0);
+        if ($v <= 0) continue;
+        $out[$id] = $v;
+        $vf = CACHE_DIR . '/vviews_' . $id . '.json';
+        @file_put_contents($vf, json_encode(['views' => $v, 'ts' => time()]));
+    }
+    curl_multi_close($mh);
+
+    return $out;
+}
 }

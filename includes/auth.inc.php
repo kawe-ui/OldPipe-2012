@@ -387,4 +387,248 @@ function yt_own_channel_id_cached(array $acct): string {
 
     if ($id !== '') @file_put_contents($cacheFile, $id);
     return $id;
+};
+
+if (!function_exists('yt_is_subscribed')) {
+
+/**
+ * Статус подписки на $targetChannelId.
+ * $myChannelId можно пустым (нужен только для self-check).
+ * Пишет короткий лог в %TEMP%/yt_sub_debug.log
+ */
+function yt_is_subscribed(string $myChannelId, string $targetChannelId): bool {
+    $targetChannelId = trim($targetChannelId);
+    if ($targetChannelId === '' || !preg_match('/^UC[A-Za-z0-9_-]{22}$/', $targetChannelId)) {
+        return false;
+    }
+
+    if ($myChannelId === '' && function_exists('yt_account_info')) {
+        $acct = yt_account_info();
+        if (is_array($acct)) {
+            $myChannelId = (string)($acct['channelId'] ?? $acct['channel_id'] ?? '');
+        }
+    }
+    if ($myChannelId !== '' && $myChannelId === $targetChannelId) {
+        return false;
+    }
+
+    if (!function_exists('yt_should_auth') || !yt_should_auth()) {
+        _yt_sub_debug("no auth / no SAPISID for $targetChannelId");
+        return false;
+    }
+
+    $sapisid  = (string)($_COOKIE['SAPISID'] ?? '');
+    $cacheKey = sys_get_temp_dir() . '/yt_sub_v4_' . sha1($sapisid . '|' . $targetChannelId);
+    if (is_file($cacheKey) && (time() - filemtime($cacheKey)) < 600) {
+        $v = @file_get_contents($cacheKey);
+        if ($v === '1') return true;
+        if ($v === '0') return false;
+    }
+
+    $result = _yt_fetch_subscribed_status($targetChannelId);
+    _yt_sub_debug("fetch $targetChannelId => " . var_export($result, true));
+    if ($result === null) {
+        // сетевая/парсинг ошибка — не кэшируем
+        return false;
+    }
+    @file_put_contents($cacheKey, $result ? '1' : '0');
+    return $result;
 }
+
+function _yt_sub_debug(string $msg): void {
+    $f = sys_get_temp_dir() . '/yt_sub_debug.log';
+    @file_put_contents($f, date('H:i:s') . ' ' . $msg . "\n", FILE_APPEND);
+}
+
+/**
+ * Авторизованный browse. true/false/null(ошибка).
+ */
+function _yt_fetch_subscribed_status(string $channelId): ?bool {
+    if (!function_exists('yt_auth_headers')) return null;
+
+    $auth = yt_auth_headers();
+    if ($auth === []) return null;
+
+    $base = function_exists('_yt_innertube_const')
+        ? _yt_innertube_const('INNERTUBE_BASE_URL', 'https://www.youtube.com/youtubei/v1/')
+        : (defined('INNERTUBE_BASE_URL') ? INNERTUBE_BASE_URL : 'https://www.youtube.com/youtubei/v1/');
+    $key  = function_exists('_yt_innertube_const')
+        ? _yt_innertube_const('INNERTUBE_API_KEY', 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8')
+        : (defined('INNERTUBE_API_KEY') ? INNERTUBE_API_KEY : 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8');
+    $ver  = function_exists('_yt_innertube_const')
+        ? _yt_innertube_const('INNERTUBE_CLIENT_VER', '2.20260709.01.00')
+        : (defined('INNERTUBE_CLIENT_VER') ? INNERTUBE_CLIENT_VER : '2.20260709.01.00');
+
+    $cookie = function_exists('yt_current_request_cookie') ? yt_current_request_cookie() : '';
+    $payload = json_encode([
+        'context'  => [
+            'client' => [
+                'clientName'    => 'WEB',
+                'clientVersion' => $ver,
+                'hl'            => 'en',
+                'gl'            => 'US',
+            ],
+        ],
+        'browseId' => $channelId,
+    ], JSON_UNESCAPED_SLASHES);
+
+    $headers = array_merge($auth, [
+        'Content-Type: application/json',
+        'X-Origin: https://www.youtube.com',
+        'X-Goog-AuthUser: 0',
+        'X-YouTube-Client-Name: 1',
+        'X-YouTube-Client-Version: ' . $ver,
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    ]);
+    // Cookie уже в $auth, но на всякий случай продублируем через CURLOPT_COOKIE
+    $ch = curl_init($base . 'browse?key=' . $key . '&prettyPrint=false');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 14,
+        CURLOPT_HTTPHEADER     => $headers,
+        CURLOPT_COOKIE         => rtrim($cookie, '; '),
+    ]);
+    if (function_exists('yt_curl_ssl_opts'))   yt_curl_ssl_opts($ch);
+    if (function_exists('yt_curl_proxy_opts')) yt_curl_proxy_opts($ch);
+
+    $res  = curl_exec($ch);
+    $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    $cerr = curl_error($ch);
+    if ($res === false || $code !== 200) {
+        _yt_sub_debug("browse HTTP $code curl=$cerr body=" . substr((string)$res, 0, 200));
+        return null;
+    }
+
+    $data = json_decode($res, true);
+    if (!is_array($data)) {
+        _yt_sub_debug('browse JSON decode fail');
+        return null;
+    }
+
+    $found = _yt_extract_subscribed_flag($data);
+    if ($found === null) {
+        // сохраним кусок ответа для отладки (один раз)
+        $dump = sys_get_temp_dir() . '/yt_sub_last_browse.json';
+        @file_put_contents($dump, json_encode([
+            'channelId' => $channelId,
+            'hasFrameworkUpdates' => isset($data['frameworkUpdates']),
+            'headerKeys' => array_keys($data['header'] ?? []),
+            'topKeys' => array_keys($data),
+            'mutations_sample' => array_slice($data['frameworkUpdates']['entityBatchUpdate']['mutations'] ?? [], 0, 3),
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        _yt_sub_debug("flag not found, dump=$dump");
+    }
+    return $found;
+}
+
+/**
+ * Только кнопка ЭТОГО канала (header / pageHeader), не рекомендованные.
+ * true/false если нашли, null если нет.
+ */
+function _yt_extract_subscribed_flag(array $data): ?bool {
+    $mutations = $data['frameworkUpdates']['entityBatchUpdate']['mutations'] ?? [];
+
+    // Индекс entityKey → subscribed
+    $byKey = [];
+    foreach ($mutations as $mut) {
+        $ent = $mut['payload']['subscriptionStateEntity'] ?? null;
+        if (!is_array($ent) || !array_key_exists('subscribed', $ent)) continue;
+        $ek = (string)($mut['entityKey'] ?? '');
+        if ($ek !== '') $byKey[$ek] = (bool)$ent['subscribed'];
+        // иногда key лежит внутри entity
+        $ik = (string)($ent['key'] ?? '');
+        if ($ik !== '') $byKey[$ik] = (bool)$ent['subscribed'];
+    }
+
+    // ── 1) Header: c4TabbedHeaderRenderer (старый) ───────────────────────────
+    $hdr = $data['header']['c4TabbedHeaderRenderer'] ?? null;
+    if (is_array($hdr)) {
+        $btn = $hdr['subscribeButton']['subscribeButtonRenderer'] ?? null;
+        if (is_array($btn) && array_key_exists('subscribed', $btn)) {
+            return (bool)$btn['subscribed'];
+        }
+    }
+
+    // ── 2) pageHeaderViewModel → subscribeButtonViewModel ────────────────────
+    $vm = _yt_find_renderer_by_name($data, 'subscribeButtonViewModel', 0, 12);
+    if (is_array($vm)) {
+        // stateEntityStoreKey → mutations
+        $sk = (string)($vm['stateEntityStoreKey'] ?? '');
+        if ($sk !== '' && array_key_exists($sk, $byKey)) {
+            return $byKey[$sk];
+        }
+        // inline subscribeState
+        foreach ([
+            $vm['subscribeState']['subscribed'] ?? null,
+            $vm['subscribeButtonContent']['subscribeState']['subscribed'] ?? null,
+            $vm['unsubscribeButtonContent']['subscribeState']['subscribed'] ?? null,
+        ] as $s) {
+            if ($s !== null) return (bool)$s;
+        }
+        // key внутри subscribeState
+        $k2 = (string)($vm['subscribeButtonContent']['subscribeState']['key'] ?? $vm['subscribeState']['key'] ?? '');
+        if ($k2 !== '' && array_key_exists($k2, $byKey)) {
+            return $byKey[$k2];
+        }
+    }
+
+    // ── 3) Если в mutations ровно одна subscriptionStateEntity — берём её ───
+    if (count($byKey) === 1) {
+        return (bool)reset($byKey);
+    }
+
+    // ── 4) Старый subscribeButtonRenderer только в header-ветке ──────────────
+    if (is_array($hdr)) {
+        $found = _yt_find_sub_limited($hdr, 0);
+        if ($found !== null) return $found;
+    }
+    // pageHeader ветка
+    $ph = $data['header'] ?? $data['contents'] ?? null;
+    if (is_array($ph)) {
+        $found = _yt_find_sub_limited($ph, 0);
+        if ($found !== null) return $found;
+    }
+
+    return null;
+}
+
+/** Поиск renderer по имени ключа, ограниченная глубина */
+function _yt_find_renderer_by_name(array $node, string $name, int $depth, int $maxDepth) {
+    if ($depth > $maxDepth) return null;
+    if (isset($node[$name]) && is_array($node[$name])) return $node[$name];
+    foreach ($node as $v) {
+        if (!is_array($v)) continue;
+        $r = _yt_find_renderer_by_name($v, $name, $depth + 1, $maxDepth);
+        if ($r !== null) return $r;
+    }
+    return null;
+}
+
+/** Ищем subscribed только в узлах кнопки, без обхода всего JSON */
+function _yt_find_sub_limited(array $node, int $depth): ?bool {
+    if ($depth > 14) return null;
+    if (isset($node['subscribeButtonRenderer']) && is_array($node['subscribeButtonRenderer'])) {
+        $b = $node['subscribeButtonRenderer'];
+        if (array_key_exists('subscribed', $b)) return (bool)$b['subscribed'];
+    }
+    if (isset($node['subscribeButtonViewModel']) && is_array($node['subscribeButtonViewModel'])) {
+        $vm = $node['subscribeButtonViewModel'];
+        foreach ([
+            $vm['subscribeState']['subscribed'] ?? null,
+            $vm['subscribeButtonContent']['subscribeState']['subscribed'] ?? null,
+            $vm['unsubscribeButtonContent']['subscribeState']['subscribed'] ?? null,
+        ] as $s) {
+            if ($s !== null) return (bool)$s;
+        }
+    }
+    foreach ($node as $v) {
+        if (!is_array($v)) continue;
+        $r = _yt_find_sub_limited($v, $depth + 1);
+        if ($r !== null) return $r;
+    }
+    return null;
+}
+
+} // end if !function_exists
